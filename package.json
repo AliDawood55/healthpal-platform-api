@@ -1,0 +1,53 @@
+{
+  "name": "healthpal-platform-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run",
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AliDawood55/healthpal-platform-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AliDawood55/healthpal-platform-api/issues"
+  },
+  "homepage": "https://github.com/AliDawood55/healthpal-platform-api#readme",
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.18",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "jose": "^6.1.0",
+    "mysql2": "^3.15.1",
+    "pino": "^9.12.0",
+    "pino-http": "^10.5.0",
+    "prom-client": "^15.1.3",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^13.0.0",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.3",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
+    "vitest": "^3.2.4"
+  }
+}
