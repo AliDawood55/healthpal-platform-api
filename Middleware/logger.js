@@ -1,6 +1,4 @@
 
-function logger(massage){
-    console.log("this is logger",massage);
+export default function logger(message) {
+    console.log('this is logger', message);
 }
-
-module.exports = logger;
