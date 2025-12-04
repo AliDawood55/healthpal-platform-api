@@ -5,6 +5,7 @@ const morgan = require('morgan');
 
 const usersRouter = require('./Routes/UsersRouter');
 const consultRouter = require('./Routes/ConsultRouter');
+const sponsorshipRouter = require('./Routes/SponsorshipRouter');
 
 const { notFound, errorHandler } = require('./Middleware/logger');
 
@@ -18,6 +19,9 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/consult', consultRouter);
+console.log('TYPE OF sponsorshipRouter =', typeof sponsorshipRouter);
+
+app.use('/api/v1/sponsorship', sponsorshipRouter);
 
 app.use(notFound);
 app.use(errorHandler);
