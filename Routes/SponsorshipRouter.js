@@ -1,6 +1,8 @@
-const router = require('express').Router();
-const ctrl = require('../Controllers/SponsorshipController');
-const v = require('../Validator/sponsorshipValidation');
+import { Router } from 'express';
+import ctrl from '../Controllers/SponsorshipController.js';
+import v from '../Validator/sponsorshipValidation.js';
+
+const router = Router();
 
 router.get('/cases', ctrl.listCases);
 router.get('/cases/:id', ctrl.getCaseById);
@@ -15,4 +17,4 @@ router.get('/cases/:id/donations', ctrl.listCaseDonations);
 
 router.get('/donors/:donorUserId/summary', ctrl.getDonorSummary);
 
-module.exports = router;
+export default router;

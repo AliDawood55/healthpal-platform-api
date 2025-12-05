@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const createCaseSchema = Joi.object({
     patient_id: Joi.number().integer().required(),
@@ -18,28 +18,37 @@ const createDonationSchema = Joi.object({
         .required()
 });
 
-exports.validateCreateCase = (req, res, next) => {
+export const validateCreateCase = (req, res, next) => {
     const { error, value } = createCaseSchema.validate(req.body, {
         abortEarly: false
     });
+
     if (error) {
         return res
-        .status(422)
-        .json({ errors: error.details.map((d) => d.message) });
+            .status(422)
+            .json({ errors: error.details.map((d) => d.message) });
     }
+
     req.body = value;
     next();
 };
 
-exports.validateCreateDonation = (req, res, next) => {
+export const validateCreateDonation = (req, res, next) => {
     const { error, value } = createDonationSchema.validate(req.body, {
         abortEarly: false
     });
+
     if (error) {
         return res
-        .status(422)
-        .json({ errors: error.details.map((d) => d.message) });
+            .status(422)
+            .json({ errors: error.details.map((d) => d.message) });
     }
+
     req.body = value;
     next();
+};
+
+export default {
+    validateCreateCase,
+    validateCreateDonation,
 };

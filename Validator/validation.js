@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const userSchema = Joi.object({
     name: Joi.string().min(2).max(100).required(),
@@ -6,9 +6,13 @@ const userSchema = Joi.object({
     role: Joi.string().valid('patient','doctor','donor','ngo','admin').required()
 });
 
-exports.validateCreateUser = (req, res, next) => {
+export const validateCreateUser = (req, res, next) => {
     const { error, value } = userSchema.validate(req.body, { abortEarly: false });
-    if (error) return res.status(422).json({ errors: error.details.map(d => d.message) });
+    if (error) {
+        return res.status(422).json({
+            errors: error.details.map(d => d.message)
+        });
+    }
     req.body = value;
     next();
 };

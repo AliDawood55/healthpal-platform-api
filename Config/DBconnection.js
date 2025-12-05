@@ -1,54 +1,60 @@
-// const mysql = require('mysql2');
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import mysql from 'mysql2/promise';
 
-// const dbConfig = {
-//    host: process.env.DB_HOST || 'localhost',
-//    user: process.env.DB_USER || 'root',
-//    password: process.env.DB_PASSWORD || '',
-//    database: process.env.DB_NAME || 'HealthpalPlatformApi_db',
-//    waitForConnections: true,
-//    connectionLimit: 10,
-//    queueLimit: 0,
-//    charset: 'utf8mb4_general_ci',
-// };
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// const pool = mysql.createPool(dbConfig);
+dotenv.config({
+   path: path.resolve(__dirname, '../.env'),
+});
 
-// pool.getConnection((err, connection) => {
-//    if (err) {
-//       console.error('Error connecting to the database:', err);
-//    }else {
-//       console.log('Database connected successfully');
-//       connection.release();
-//    }
-// });
+console.log("ENV LOADED IN DB FILE:", {
+   DB_NAME: process.env.DB_NAME,
+   DB_USER: process.env.DB_USER,
+   DB_HOST: process.env.DB_HOST,
+});
 
-// module.exports = pool;
+const DB_NAME = process.env.DB_NAME || 'healthpal_db';
+const DB_PORT = parseInt(process.env.DB_PORT || '3306', 10);
+const AUTO_CREATE_DB = (process.env.DB_AUTOCREATE ?? 'true').toLowerCase() !== 'false';
 
-const mysql = require('mysql2/promise');
-require('dotenv').config();
-
-const dbConfig = {
-   host: process.env.DB_HOST || 'localhost',
+const baseConfig = {
+   host: process.env.DB_HOST || '127.0.0.1',
+   port: DB_PORT,
    user: process.env.DB_USER || 'root',
    password: process.env.DB_PASSWORD || '',
-   database: process.env.DB_NAME || 'healthpaltest',
    waitForConnections: true,
    connectionLimit: 10,
    queueLimit: 0,
    charset: 'utf8mb4_general_ci',
 };
 
-let pool;
-
-async function initDB() {
-   if (!pool) {
-      pool = mysql.createPool(dbConfig);
-      const conn = await pool.getConnection();
-      console.log('Database connected successfully');
-      conn.release();
+if (AUTO_CREATE_DB) {
+   try {
+      const adminConn = await mysql.createConnection({ ...baseConfig });
+      await adminConn.query(
+         `CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;`
+      );
+      await adminConn.end();
+      console.log(`Database ensured: ${DB_NAME}`);
+   } catch (err) {
+      console.error('Error ensuring database exists:', err);
+      throw err;
    }
-   return pool;
 }
 
-module.exports = { initDB };
+const dbConfig = { ...baseConfig, database: DB_NAME };
+const pool = mysql.createPool(dbConfig);
 
+try {
+   const connection = await pool.getConnection();
+   console.log('Database connected successfully');
+   connection.release();
+} catch (err) {
+   console.error('Error connecting to the database:', err);
+   throw err;
+}
+
+export default pool;

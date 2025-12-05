@@ -1,9 +1,12 @@
-const { initDB } = require('../Config/DBconnection');
+import initDB from '../Config/DBconnection.js';
 
-module.exports = {
+export default {
     async exists(id) {
         const db = await initDB();
-        const [rows] = await db.query('SELECT 1 FROM appointments WHERE id = ? LIMIT 1', [id]);
+        const [rows] = await db.query(
+            'SELECT 1 FROM appointments WHERE id = ? LIMIT 1',
+            [id]
+        );
         return rows.length > 0;
     }
 };

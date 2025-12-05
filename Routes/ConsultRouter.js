@@ -1,16 +1,16 @@
-const router = require('express').Router();
-const ctrl = require('../Controllers/ConsultController');
-const v = require('../Validator/consultValidation');
+import Router from 'express';
+import ctrl from '../Controllers/ConsultController.js';
+import v from '../Validator/consultValidation.js';
 
-// sessions
+const router = Router();
+
 router.post('/sessions', v.validateCreateSession, ctrl.createSession);
 router.get('/sessions/:id', ctrl.getSession);
-router.get('/sessions', ctrl.listSessions); // ?appointment_id=&mode=
-router.patch('/sessions/:id/start', ctrl.startSession); // sets started_at=NOW()
-router.patch('/sessions/:id/end', ctrl.endSession);     // sets ended_at=NOW()
+router.get('/sessions', ctrl.listSessions);
+router.patch('/sessions/:id/start', ctrl.startSession);
+router.patch('/sessions/:id/end', ctrl.endSession);
 
-// async messages (low-bandwidth)
 router.post('/messages', v.validateCreateMessage, ctrl.createMessage);
-router.get('/messages', ctrl.listMessages); // ?appointment_id=
+router.get('/messages', ctrl.listMessages);
 
-module.exports = router;
+export default router;

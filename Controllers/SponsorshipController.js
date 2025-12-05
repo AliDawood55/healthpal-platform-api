@@ -1,7 +1,7 @@
-const SponsorshipCase = require('../Models/SponsorshipCase');
-const Donation = require('../Models/Donation');
+import SponsorshipCase from '../Models/SponsorshipCase.js';
+import Donation from '../Models/Donation.js';
 
-exports.createCase = async (req, res, next) => {
+export const createCase = async (req, res, next) => {
     try {
         const created = await SponsorshipCase.createCase(req.body);
         res.status(201).json(created);
@@ -10,7 +10,7 @@ exports.createCase = async (req, res, next) => {
     }
 };
 
-exports.listCases = async (req, res, next) => {
+export const listCases = async (req, res, next) => {
     try {
         const cases = await SponsorshipCase.listCases(req.query);
         res.json(cases);
@@ -19,7 +19,7 @@ exports.listCases = async (req, res, next) => {
     }
 };
 
-exports.getCaseById = async (req, res, next) => {
+export const getCaseById = async (req, res, next) => {
     try {
         const id = req.params.id;
         const c = await SponsorshipCase.findById(id);
@@ -27,24 +27,24 @@ exports.getCaseById = async (req, res, next) => {
         const stats = await SponsorshipCase.getCaseStats(id);
         const donations = await Donation.listByCase(id);
         res.json({
-        ...c,
-        stats,
-        donations
+            ...c,
+            stats,
+            donations
         });
     } catch (err) {
         next(err);
     }
 };
 
-exports.createDonation = async (req, res, next) => {
+export const createDonation = async (req, res, next) => {
     try {
         const caseId = req.params.id;
         const body = req.body;
         const donation = await Donation.createDonation({
-        case_id: Number(caseId),
-        donor_id: body.donor_id,
-        amount: body.amount,
-        payment_method: body.payment_method
+            case_id: Number(caseId),
+            donor_id: body.donor_id,
+            amount: body.amount,
+            payment_method: body.payment_method
         });
         await SponsorshipCase.addRaisedAmount(caseId, body.amount);
         res.status(201).json(donation);
@@ -53,7 +53,7 @@ exports.createDonation = async (req, res, next) => {
     }
 };
 
-exports.listCaseDonations = async (req, res, next) => {
+export const listCaseDonations = async (req, res, next) => {
     try {
         const caseId = req.params.id;
         const rows = await Donation.listByCase(caseId);
@@ -63,7 +63,7 @@ exports.listCaseDonations = async (req, res, next) => {
     }
 };
 
-exports.getDonorSummary = async (req, res, next) => {
+export const getDonorSummary = async (req, res, next) => {
     try {
         const donorUserId = req.params.donorUserId;
         const summary = await Donation.summaryForDonor(donorUserId);
@@ -71,4 +71,13 @@ exports.getDonorSummary = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+};
+
+export default {
+    createCase,
+    listCases,
+    getCaseById,
+    createDonation,
+    listCaseDonations,
+    getDonorSummary,
 };

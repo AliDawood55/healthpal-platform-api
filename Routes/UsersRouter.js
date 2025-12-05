@@ -1,3 +1,4 @@
-const router = require('express').Router();
+import { Router } from 'express';
+const router = Router();
 router.get('/', (_req, res) => res.json({ ok: true, tag: 'users' }));
-module.exports = router;
+export default router;
