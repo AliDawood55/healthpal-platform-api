@@ -6,28 +6,40 @@ import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 
 import mentalRouter from "./Routes/MentalHealthRouter.js";
-import consultsRouter from "./Routes/ConsultsRouter.js";
 import AuthRouter from "./Routes/AuthRouter.js";
 import errorHandler from "./Middleware/errorHandler.js";
-import { initRealtimeHandler } from "./Validator/realtimeHandler.js";
+import MissionRouter from "./Routes/MissionRouter.js";
 
 dotenv.config();
 
 const app = express();
+
+// Load Swagger file
 const swaggerDocument = YAML.load("./docs/openapi.yaml");
 
+// Middleware
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Swagger Docs
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.get("/", (req, res) => res.json({ message: "HealthPal API", version: "1.0" }));
+
+// Basic home route
+app.get("/", (req, res) => {
+  res.json({ message: "HealthPal API", version: "1.0" });
+});
+
+// Routers
 app.use("/api/v1/mental", mentalRouter);
-app.use("/api/v1/consults", consultsRouter);
 app.use("/api/v1/auth", AuthRouter);
+app.use("/api/v1/mission", MissionRouter);
+
+// Global error handler
 app.use(errorHandler);
 
+// Server
 const server = http.createServer(app);
-initRealtimeHandler(server);
 
 const port = process.env.PORT || 3001;
 if (process.env.NODE_ENV !== "test") {

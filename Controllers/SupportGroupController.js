@@ -1,16 +1,15 @@
-import {
-  supportGroupSchema,
-  supportGroupMessageSchema,
-} from "../Validator/validation.js";
+import { supportGroupSchema } from "../Validator/validation.js";
 import SupportGroup from "../Models/SupportGroup.js";
+
 
 export async function createSupportGroup(req, res, next) {
   try {
     const { error, value } = supportGroupSchema.validate(req.body);
-    if (error)
+    if (error) {
       return res
         .status(400)
         .json({ error: error.details.map((d) => d.message) });
+    }
 
     const result = await SupportGroup.create({
       title: value.title,
@@ -30,6 +29,7 @@ export async function createSupportGroup(req, res, next) {
   }
 }
 
+
 export async function listSupportGroups(req, res, next) {
   try {
     const rows = await SupportGroup.listAll();
@@ -40,10 +40,15 @@ export async function listSupportGroups(req, res, next) {
   }
 }
 
+
+/*
+  Join Support Group
+  ---------------------------------------------------------- */
 export async function joinSupportGroup(req, res, next) {
   try {
     const joined = await SupportGroup.join(req.params.id, req.user.id);
-    if (!joined) return res.status(409).json({ error: "Already a member" });
+    if (!joined)
+      return res.status(409).json({ error: "Already a member" });
 
     res.status(201).json({ success: true, message: "Joined successfully" });
   } catch (err) {
@@ -64,6 +69,7 @@ export async function leaveSupportGroup(req, res, next) {
   }
 }
 
+
 export async function listGroupMembers(req, res, next) {
   try {
     const members = await SupportGroup.listMembers(req.params.id);
@@ -74,47 +80,10 @@ export async function listGroupMembers(req, res, next) {
   }
 }
 
-export async function postSupportGroupMessage(req, res, next) {
-  try {
-    const { error, value } = supportGroupMessageSchema.validate(req.body);
-    if (error)
-      return res
-        .status(400)
-        .json({ error: error.details.map((d) => d.message) });
-
-    const result = await SupportGroup.postMessage(
-      req.params.id,
-      req.user.id,
-      value.message
-    );
-
-    res.status(201).json({
-      success: true,
-      message: "Message sent successfully",
-      data: result,
-    });
-  } catch (err) {
-    console.error("postSupportGroupMessage error:", err);
-    next(err);
-  }
-}
-
-export async function listSupportGroupMessages(req, res, next) {
-  try {
-    const messages = await SupportGroup.listMessages(req.params.id);
-    res.json(messages);
-  } catch (err) {
-    console.error("listSupportGroupMessages error:", err);
-    next(err);
-  }
-}
-
 export default {
   createSupportGroup,
   listSupportGroups,
   joinSupportGroup,
   leaveSupportGroup,
   listGroupMembers,
-  postSupportGroupMessage,
-  listSupportGroupMessages,
 };

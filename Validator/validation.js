@@ -33,31 +33,6 @@ export const supportGroupSchema = Joi.object({
 
 
 
-export const supportGroupMessageSchema = Joi.object({
-  message: Joi.string().min(1).max(1000).required().messages({
-    'string.empty': 'Message cannot be empty',
-  }),
-}).unknown(false);
-
-
-
-export const anonStartSchema = Joi.object({
-  initial_message: Joi.string().allow('', null).optional(),
-  for_children: Joi.boolean().optional(),
-}).unknown(false);
-
-
-
-export const anonMessageSchema = Joi.object({
-  session_token: Joi.string().required().messages({
-    'any.required': 'Session token is required',
-  }),
-  message: Joi.string().min(1).max(1000).required().messages({
-    'string.empty': 'Message cannot be empty',
-  }),
-}).unknown(false);
-
-
 export const roleSchema = Joi.string()
   .valid('patient', 'doctor', 'donor', 'ngo', 'admin')
   .required()
@@ -87,3 +62,37 @@ const validateCounselorAssignment =  (req, res, next) => {
 };
 
 export { validateCounselorAssignment };
+
+
+export const requestSchema = Joi.object({
+  notes: Joi.string().max(1000).optional(),
+}).unknown(false);
+
+export const ngoSchema = Joi.object({
+  name: Joi.string().min(2).max(255).required().messages({
+    'string.empty': 'NGO name is required',
+  }),
+}).unknown(false);
+
+export const missionSchema = Joi.object({
+  title: Joi.string().min(3).max(255).required(),
+  specialty: Joi.string().min(2).max(255).required(),
+  location: Joi.string().min(2).max(255).required(),
+  start_date: Joi.string().isoDate().required(),
+  end_date: Joi.string().isoDate().required(),
+  country: Joi.string().optional(),
+  city: Joi.string().optional(),
+  organizer_ngo_id: Joi.number().integer().optional(),
+  description: Joi.string().max(2000).optional(),
+  is_published: Joi.boolean().optional(),
+}).unknown(false);
+
+export const availabilitySchema = Joi.object({
+  start_at: Joi.string().isoDate().required(),
+  end_at: Joi.string().isoDate().required(),
+  location: Joi.string().min(2).max(255).required(),
+  country: Joi.string().optional(),
+  city: Joi.string().optional(),
+  capacity: Joi.number().integer().min(1).optional(),
+  notes: Joi.string().max(1000).optional(),
+}).unknown(false);

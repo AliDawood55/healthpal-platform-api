@@ -1,15 +1,13 @@
 openapi: 3.0.3
 info:
-  title: HealthPal API - Feature 5 (Mental Health & Trauma Support)
-  version: 1.2.0
+  title: HealthPal API
+  version: 1.0.0
   description: >
-    This documentation describes the **HealthPal REST API** for **Mental Health & Trauma Support**.  
-    It covers:
-      - Trauma Counseling Portal  
-      - Support Groups  
-      - Anonymous Therapy Chat  
-      - Full Role-Based Authentication and User Management  
-    Supported roles: **Patient, Doctor, Donor, NGO Admin, System Admin**
+    REST API for HealthPal Core System:
+      - Authentication (JWT)
+      - User Management (Admin Only)
+      - Counseling Requests System
+      - Support Groups (without messaging)
 
 servers:
   - url: http://localhost:3001/api/v1
@@ -17,15 +15,15 @@ servers:
 
 tags:
   - name: Auth
-    description: Authentication and role-based access
+    description: Authentication and login
   - name: UserManagement
-    description: Manage system users (System Admin only)
+    description: System Admin user management
   - name: Counseling
-    description: Trauma counseling requests and management
+    description: Create and manage counseling requests
   - name: SupportGroups
-    description: Peer support groups for patients and families
-  - name: AnonymousChat
-    description: Anonymous therapy sessions between users and counselors
+    description: Join and list support groups
+  - name: Missions
+    description: Partnerships with NGOs and surgical missions
 
 components:
   securitySchemes:
@@ -35,93 +33,125 @@ components:
       bearerFormat: JWT
 
   schemas:
+
     AuthResponse:
       type: object
       properties:
-        success: { type: boolean, example: true }
-        token: { type: string, example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... }
+        success: { type: boolean }
+        token: { type: string }
         user:
           type: object
           properties:
-            id: { type: integer, example: 1 }
-            name: { type: string, example: "Ali" }
-            email: { type: string, example: "ali@healthpal.com" }
-            role: { type: string, example: "patient" }
+            id: { type: integer }
+            name: { type: string }
+            email: { type: string }
+            role: { type: string }
 
     User:
       type: object
       properties:
-        id: { type: integer, example: 5 }
-        name: { type: string, example: "Dr. Ahmad" }
-        email: { type: string, example: "ahmad@healthpal.com" }
-        role: { type: string, example: "doctor" }
-        is_active: { type: boolean, example: true }
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string }
+        is_active: { type: boolean }
         created_at: { type: string, format: date-time }
 
     CounselingRequestInput:
       type: object
       required: [topic, message]
       properties:
-        topic: { type: string, example: "PTSD after trauma" }
-        message: { type: string, example: "I feel anxious and can't sleep since the bombing." }
-        for_children: { type: boolean, example: false }
+        topic: { type: string }
+        message: { type: string }
+        for_children: { type: boolean }
         severity:
           type: string
           enum: [mild, moderate, severe]
-          example: moderate
 
     CounselingRequest:
       type: object
       properties:
-        id: { type: integer, example: 12 }
-        created_by_user_id: { type: integer, example: 7 }
-        topic: { type: string, example: "PTSD after trauma" }
-        details: { type: string, example: "I feel anxious and can't sleep since the bombing." }
-        for_children: { type: boolean, example: false }
-        severity: { type: string, example: moderate }
+        id: { type: integer }
+        created_by_user_id: { type: integer }
+        topic: { type: string }
+        details: { type: string }
+        for_children: { type: boolean }
+        severity: { type: string }
         status:
           type: string
           enum: [open, assigned, in_progress, resolved, closed]
-          example: open
         assigned_counselor_user_id: { type: integer, nullable: true }
         created_at: { type: string, format: date-time }
 
     SupportGroup:
       type: object
       properties:
-        id: { type: integer, example: 3 }
-        title: { type: string, example: "Cancer Support Group" }
-        topic: { type: string, example: "coping with treatment" }
-        description: { type: string, example: "A safe place to share experiences" }
-        members_count: { type: integer, example: 42 }
+        id: { type: integer }
+        title: { type: string }
+        topic: { type: string }
+        description: { type: string }
+        members_count: { type: integer }
 
-    SupportGroupMessage:
-      type: object
-      properties:
-        id: { type: integer, example: 10 }
-        message: { type: string, example: "Stay strong, we’re all in this together." }
-        sender_name: { type: string, example: "Ahmed" }
-        created_at: { type: string, format: date-time }
-
-    AnonSession:
+    NGO:
       type: object
       properties:
         id: { type: integer }
-        session_token: { type: string }
+        name: { type: string }
+        verified: { type: integer }
+        created_at: { type: string, format: date-time }
+
+    SurgicalMission:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        specialty: { type: string }
+        location: { type: string }
+        country: { type: string }
+        city: { type: string }
+        start_date: { type: string, format: date }
+        end_date: { type: string, format: date }
+        organizer_ngo_id: { type: integer }
+        description: { type: string }
+        is_published: { type: integer }
+        created_at: { type: string, format: date-time }
+
+    MissionAvailability:
+      type: object
+      properties:
+        id: { type: integer }
+        doctor_user_id: { type: integer }
+        start_at: { type: string, format: date-time }
+        end_at: { type: string, format: date-time }
+        location: { type: string }
+        country: { type: string }
+        city: { type: string }
+        capacity: { type: integer }
+        notes: { type: string }
+        created_at: { type: string, format: date-time }
+
+    MissionRequest:
+      type: object
+      properties:
+        id: { type: integer }
+        availability_id: { type: integer }
+        patient_id: { type: integer }
+        status:
+          type: string
+          enum: [requested, approved, rejected, cancelled]
+        notes: { type: string }
         created_at: { type: string, format: date-time }
 
 security:
   - BearerAuth: []
 
 paths:
-  
-  # Authentication
-  
+
+
   /auth/register:
     post:
       tags: [Auth]
-      summary: Register new user
-      description: Register a new account for any allowed role.
+      summary: Register a new user
       requestBody:
         required: true
         content:
@@ -130,22 +160,20 @@ paths:
               type: object
               required: [name, email, password, role]
               properties:
-                name: { type: string, example: "Ali" }
-                email: { type: string, example: "ali@healthpal.com" }
-                password: { type: string, example: "ali123" }
+                name: { type: string }
+                email: { type: string }
+                password: { type: string }
                 role:
                   type: string
                   enum: [patient, doctor, donor, ngo, admin]
-                  example: "patient"
       responses:
         "201": { description: User registered successfully }
-        "400": { description: Invalid input data }
+        "400": { description: Invalid input }
 
   /auth/login:
     post:
       tags: [Auth]
-      summary: User login
-      description: Logs in a user and returns a JWT token.
+      summary: Login user
       requestBody:
         required: true
         content:
@@ -154,26 +182,24 @@ paths:
               type: object
               required: [email, password]
               properties:
-                email: { type: string, example: "ali@healthpal.com" }
-                password: { type: string, example: "ali123" }
+                email: { type: string }
+                password: { type: string }
       responses:
         "200":
           description: Login successful
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AuthResponse" }
-        "401": { description: Invalid credentials }
 
-  
-  # User Management
+
   /auth/users:
     get:
       tags: [UserManagement]
-      summary: List all users
+      summary: List all system users
       security: [{ BearerAuth: [] }]
       responses:
         "200":
-          description: List of all users
+          description: List of users
           content:
             application/json:
               schema:
@@ -183,14 +209,14 @@ paths:
   /auth/users/{id}:
     get:
       tags: [UserManagement]
-      summary: Get single user
+      summary: Get a user by ID
       parameters:
         - name: id
           in: path
           required: true
           schema: { type: integer }
       responses:
-        "200": { description: User details }
+        "200": { description: User found }
         "404": { description: User not found }
 
     put:
@@ -216,7 +242,7 @@ paths:
                   enum: [patient, doctor, donor, ngo, admin]
                 is_active: { type: boolean }
       responses:
-        "200": { description: User updated successfully }
+        "200": { description: User updated }
 
     delete:
       tags: [UserManagement]
@@ -227,15 +253,13 @@ paths:
           required: true
           schema: { type: integer }
       responses:
-        "200": { description: User deleted successfully }
+        "200": { description: User deleted }
 
-
-  # Counseling
 
   /mental/counseling:
     post:
       tags: [Counseling]
-      summary: Create counseling request
+      summary: Create new counseling request
       security: [{ BearerAuth: [] }]
       requestBody:
         required: true
@@ -243,7 +267,7 @@ paths:
           application/json:
             schema: { $ref: "#/components/schemas/CounselingRequestInput" }
       responses:
-        "201": { description: Counseling request created successfully }
+        "201": { description: Request created }
 
     get:
       tags: [Counseling]
@@ -254,7 +278,7 @@ paths:
           schema: { type: string }
       responses:
         "200":
-          description: List of counseling requests
+          description: List of requests
           content:
             application/json:
               schema:
@@ -264,12 +288,11 @@ paths:
   /mental/counseling/{id}/assign:
     post:
       tags: [Counseling]
-      summary: Assign counselor
-      description: Only Doctors or System Admins can assign themselves or another doctor.
+      summary: Assign counselor (admin/doctor)
       security: [{ BearerAuth: [] }]
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema: { type: integer }
       requestBody:
@@ -279,18 +302,14 @@ paths:
             schema:
               type: object
               properties:
-                counselorId:
-                  type: integer
-                  example: 9
+                counselorId: { type: integer }
       responses:
-        "200": { description: Counselor assigned successfully }
-        "404": { description: Request not found }
+        "200": { description: Assigned successfully }
 
   /mental/counseling/{id}/status:
     patch:
       tags: [Counseling]
-      summary: Update counseling status
-      description: Update request status (assigned → in_progress → resolved → closed).
+      summary: Update counseling request status
       security: [{ BearerAuth: [] }]
       requestBody:
         required: true
@@ -304,11 +323,22 @@ paths:
                   type: string
                   enum: [assigned, in_progress, resolved, closed]
       responses:
-        "200": { description: Status updated successfully }
+        "200": { description: Status updated }
 
-  # Support Groups
 
   /mental/support-groups:
+    get:
+      tags: [SupportGroups]
+      summary: List all support groups
+      responses:
+        "200":
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SupportGroup" }
+
     post:
       tags: [SupportGroups]
       summary: Create support group
@@ -326,19 +356,7 @@ paths:
                 description: { type: string }
                 is_private: { type: boolean }
       responses:
-        "201": { description: Group created successfully }
-
-    get:
-      tags: [SupportGroups]
-      summary: List all support groups
-      responses:
-        "200":
-          description: List of groups
-          content:
-            application/json:
-              schema:
-                type: array
-                items: { $ref: "#/components/schemas/SupportGroup" }
+        "201": { description: Group created }
 
   /mental/support-groups/{id}/join:
     post:
@@ -350,41 +368,155 @@ paths:
           required: true
           schema: { type: integer }
       responses:
-        "201": { description: Joined successfully }
+        "200": { description: Joined }
 
-  /mental/support-groups/{id}/messages:
-    get:
-      tags: [SupportGroups]
-      summary: Get messages from a group
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        "200": { description: List of messages }
 
+  /mission/ngos:
     post:
-      tags: [SupportGroups]
-      summary: Post message in a group
+      tags: [Missions]
+      summary: Create a new NGO (admin only)
+      security: [{ BearerAuth: [] }]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [message]
+              required: [name]
               properties:
-                message: { type: string }
+                name: { type: string }
       responses:
-        "201": { description: Message sent successfully }
+        "201": { description: NGO created }
+        "400": { description: Invalid input }
+    get:
+      tags: [Missions]
+      summary: List verified NGOs (public)
+      responses:
+        "200":
+          description: List of NGOs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/NGO' }
 
-  # Anonymous Chat
+  /mission/ngos/{id}/verify:
+    patch:
+      tags: [Missions]
+      summary: Verify an NGO (admin only)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: NGO verified }
 
-  /mental/anon/sessions:
+  /mission/missions:
     post:
-      tags: [AnonymousChat]
-      summary: Start anonymous chat
+      tags: [Missions]
+      summary: Create a surgical mission (admin or ngo)
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, specialty, location, start_date, end_date]
+              properties:
+                title: { type: string }
+                specialty: { type: string }
+                location: { type: string }
+                start_date: { type: string, format: date }
+                end_date: { type: string, format: date }
+                country: { type: string }
+                city: { type: string }
+                organizer_ngo_id: { type: integer }
+                description: { type: string }
+                is_published: { type: boolean }
+      responses:
+        "201": { description: Mission created }
+    get:
+      tags: [Missions]
+      summary: List published surgical missions (public)
+      responses:
+        "200":
+          description: List of missions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/SurgicalMission' }
+
+  /mission/missions/{id}:
+    get:
+      tags: [Missions]
+      summary: Get mission details (public)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Mission details
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SurgicalMission' }
+        "404": { description: Not found }
+
+  /mission/missions/{id}/availability:
+    post:
+      tags: [Missions]
+      summary: Doctor creates availability for missions (doctor only)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [start_at, end_at, location]
+              properties:
+                start_at: { type: string, format: date-time }
+                end_at: { type: string, format: date-time }
+                location: { type: string }
+                capacity: { type: integer }
+                notes: { type: string }
+      responses:
+        "201": { description: Availability created }
+
+  /mission/doctor/me/availability:
+    get:
+      tags: [Missions]
+      summary: List my availability (doctor only)
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200":
+          description: Doctor availabilities
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/MissionAvailability' }
+
+  /mission/availability/{id}/requests:
+    post:
+      tags: [Missions]
+      summary: Patient creates a mission request (patient only)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
       requestBody:
         required: false
         content:
@@ -392,34 +524,48 @@ paths:
             schema:
               type: object
               properties:
-                initial_message: { type: string }
-                for_children: { type: boolean }
+                notes: { type: string }
       responses:
-        "201": { description: Session started successfully }
-
-  /mental/anon/sessions/{id}/messages:
+        "201": { description: Request created }
     get:
-      tags: [AnonymousChat]
-      summary: Get messages from anonymous session
+      tags: [Missions]
+      summary: List requests for an availability (admin or ngo)
+      security: [{ BearerAuth: [] }]
       parameters:
-        - name: session_token
-          in: query
-          schema: { type: string }
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
       responses:
-        "200": { description: List of messages }
+        "200":
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/MissionRequest' }
 
-    post:
-      tags: [AnonymousChat]
-      summary: Send message in anonymous session
+  /mission/requests/{id}/status:
+    patch:
+      tags: [Missions]
+      summary: Update request status (admin or ngo)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [session_token, message]
+              required: [status]
               properties:
-                session_token: { type: string }
-                message: { type: string }
+                status:
+                  type: string
+                  enum: [requested, approved, rejected, cancelled]
       responses:
-        "201": { description: Message sent successfully }
+        "200": { description: Status updated }
+

@@ -1,10 +1,8 @@
-
 import pool from "../Config/DBconnection.js";
 import SupportGroupMembers from "./SupportGroupMembers.js";
-import SupportGroupMessages from "./SupportGroupMessages.js";
 
 class SupportGroup {
-  
+
   static async create(data) {
     const p = pool.promise();
     const [ins] = await p.query(
@@ -20,6 +18,7 @@ class SupportGroup {
       ]
     );
 
+    // Add creator as member + moderator
     await SupportGroupMembers.addMember(ins.insertId, data.creatorId);
     await p.query(
       `UPDATE support_group_members 
@@ -30,7 +29,6 @@ class SupportGroup {
 
     return { id: ins.insertId };
   }
-
 
   static async listAll() {
     const p = pool.promise();
@@ -43,7 +41,6 @@ class SupportGroup {
     return rows;
   }
 
-  
   static async getGroup(groupId) {
     const p = pool.promise();
     const [rows] = await p.query(
@@ -54,39 +51,20 @@ class SupportGroup {
     );
     if (!rows[0])
       throw Object.assign(new Error("Group not found"), { status: 404 });
+
     return rows[0];
   }
-
 
   static async join(groupId, userId) {
     return await SupportGroupMembers.addMember(groupId, userId);
   }
 
-  
   static async leave(groupId, userId) {
     return await SupportGroupMembers.removeMember(groupId, userId);
   }
 
- 
   static async listMembers(groupId) {
     return await SupportGroupMembers.listMembers(groupId);
-  }
-
-  
-  static async postMessage(groupId, userId, message) {
-    const isMember = await SupportGroupMembers.isMember(groupId, userId);
-    if (!isMember)
-      throw Object.assign(new Error("Not a member of this group"), {
-        status: 403,
-      });
-
-    await SupportGroupMessages.addMessage(groupId, userId, message);
-    return { success: true, message: "Message sent" };
-  }
-
-
-  static async listMessages(groupId) {
-    return await SupportGroupMessages.listMessages(groupId);
   }
 }
 
