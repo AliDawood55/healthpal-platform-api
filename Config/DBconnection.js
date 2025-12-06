@@ -44,4 +44,15 @@ try {
    throw err;
 }
 
+process.on('SIGINT', async () => {
+  try {
+    await pool.end();
+    console.log('MySQL pool closed.');
+  } catch (err) {
+    console.error('Error closing DB connection pool:', err);
+  } finally {
+    process.exit(0);
+  }
+});
+
 export default pool;
