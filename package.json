@@ -6,16 +6,15 @@
   "main": "app.js",
   "scripts": {
     "test": "vitest run",
-"dev": "nodemon app.js",
-"start": "node app.js",
-"lint": "eslint .",
-"db:check": "node scripts/db-check.mjs",
-"db:seed": "node scripts/seed.mjs",
-"http:test": "node scripts/http-test.mjs",
-"db:wipe": "node scripts/db-wipe.mjs",
-"db:seed:alerts": "node scripts/seed-alerts.mjs",
-"db:seed:test-user": "node scripts/seed-test-user.mjs"
-
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "lint": "eslint .",
+    "db:check": "node scripts/db-check.mjs",
+    "db:seed": "node scripts/seed.mjs",
+    "http:test": "node scripts/http-test.mjs",
+    "db:wipe": "node scripts/db-wipe.mjs",
+    "db:seed:alerts": "node scripts/seed-alerts.mjs",
+    "db:seed:test-user": "node scripts/seed-test-user.mjs"
   },
   "repository": {
     "type": "git",
@@ -40,9 +39,9 @@
     "joi": "^18.0.1",
     "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
     "mysql2": "^3.5.3",
     "pino": "^9.12.0",
-    "morgan": "^1.10.0",
     "pino-http": "^10.5.0",
     "prom-client": "^15.1.3",
     "socket.io": "^4.8.1",

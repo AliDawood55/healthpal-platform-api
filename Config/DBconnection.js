@@ -16,7 +16,7 @@ console.log("ENV LOADED IN DB FILE:", {
    DB_HOST: process.env.DB_HOST,
 });
 
-const DB_NAME = process.env.DB_NAME || 'healthpal_db';
+const DB_NAME = process.env.DB_NAME || 'healthpalplatformapi_db';
 const DB_PORT = parseInt(process.env.DB_PORT || '3306', 10);
 const AUTO_CREATE_DB = (process.env.DB_AUTOCREATE ?? 'true').toLowerCase() !== 'false';
 
