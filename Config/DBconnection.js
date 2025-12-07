@@ -57,4 +57,16 @@ try {
    throw err;
 }
 
+// إغلاق الـ pool عند إيقاف السيرفر
+process.on('SIGINT', async () => {
+   try {
+      await pool.end();
+      console.log('MySQL pool closed.');
+   } catch (err) {
+      console.error('Error closing DB connection pool:', err);
+   } finally {
+      process.exit(0);
+   }
+});
+
 export default pool;

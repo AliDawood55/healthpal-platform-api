@@ -6,9 +6,16 @@
   "main": "app.js",
   "scripts": {
     "test": "vitest run",
-    "dev": "nodemon app.js",
-    "start": "node app.js",
-    "lint": "eslint ."
+"dev": "nodemon app.js",
+"start": "node app.js",
+"lint": "eslint .",
+"db:check": "node scripts/db-check.mjs",
+"db:seed": "node scripts/seed.mjs",
+"http:test": "node scripts/http-test.mjs",
+"db:wipe": "node scripts/db-wipe.mjs",
+"db:seed:alerts": "node scripts/seed-alerts.mjs",
+"db:seed:test-user": "node scripts/seed-test-user.mjs"
+
   },
   "repository": {
     "type": "git",
@@ -23,22 +30,26 @@
   "homepage": "https://github.com/AliDawood55/healthpal-platform-api#readme",
   "dependencies": {
     "argon2": "^0.44.0",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dayjs": "^1.11.18",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
-    "joi": "^17.13.3",
+    "joi": "^18.0.1",
     "jose": "^6.1.0",
-    "morgan": "^1.10.0",
-    "mysql2": "^3.15.1",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.5.3",
     "pino": "^9.12.0",
+    "morgan": "^1.10.0",
     "pino-http": "^10.5.0",
     "prom-client": "^15.1.3",
+    "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^13.0.0",
     "yaml": "^2.8.1",
+    "yamljs": "^0.3.0",
     "zod": "^4.1.11"
   },
   "devDependencies": {

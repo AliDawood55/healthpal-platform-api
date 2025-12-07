@@ -1,0 +1,571 @@
+openapi: 3.0.3
+info:
+  title: HealthPal API
+  version: 1.0.0
+  description: >
+    REST API for HealthPal Core System:
+      - Authentication (JWT)
+      - User Management (Admin Only)
+      - Counseling Requests System
+      - Support Groups (without messaging)
+
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Authentication and login
+  - name: UserManagement
+    description: System Admin user management
+  - name: Counseling
+    description: Create and manage counseling requests
+  - name: SupportGroups
+    description: Join and list support groups
+  - name: Missions
+    description: Partnerships with NGOs and surgical missions
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    AuthResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        token: { type: string }
+        user:
+          type: object
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            email: { type: string }
+            role: { type: string }
+
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string }
+        is_active: { type: boolean }
+        created_at: { type: string, format: date-time }
+
+    CounselingRequestInput:
+      type: object
+      required: [topic, message]
+      properties:
+        topic: { type: string }
+        message: { type: string }
+        for_children: { type: boolean }
+        severity:
+          type: string
+          enum: [mild, moderate, severe]
+
+    CounselingRequest:
+      type: object
+      properties:
+        id: { type: integer }
+        created_by_user_id: { type: integer }
+        topic: { type: string }
+        details: { type: string }
+        for_children: { type: boolean }
+        severity: { type: string }
+        status:
+          type: string
+          enum: [open, assigned, in_progress, resolved, closed]
+        assigned_counselor_user_id: { type: integer, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    SupportGroup:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        topic: { type: string }
+        description: { type: string }
+        members_count: { type: integer }
+
+    NGO:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        verified: { type: integer }
+        created_at: { type: string, format: date-time }
+
+    SurgicalMission:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        specialty: { type: string }
+        location: { type: string }
+        country: { type: string }
+        city: { type: string }
+        start_date: { type: string, format: date }
+        end_date: { type: string, format: date }
+        organizer_ngo_id: { type: integer }
+        description: { type: string }
+        is_published: { type: integer }
+        created_at: { type: string, format: date-time }
+
+    MissionAvailability:
+      type: object
+      properties:
+        id: { type: integer }
+        doctor_user_id: { type: integer }
+        start_at: { type: string, format: date-time }
+        end_at: { type: string, format: date-time }
+        location: { type: string }
+        country: { type: string }
+        city: { type: string }
+        capacity: { type: integer }
+        notes: { type: string }
+        created_at: { type: string, format: date-time }
+
+    MissionRequest:
+      type: object
+      properties:
+        id: { type: integer }
+        availability_id: { type: integer }
+        patient_id: { type: integer }
+        status:
+          type: string
+          enum: [requested, approved, rejected, cancelled]
+        notes: { type: string }
+        created_at: { type: string, format: date-time }
+
+security:
+  - BearerAuth: []
+
+paths:
+
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role]
+              properties:
+                name: { type: string }
+                email: { type: string }
+                password: { type: string }
+                role:
+                  type: string
+                  enum: [patient, doctor, donor, ngo, admin]
+      responses:
+        "201": { description: User registered successfully }
+        "400": { description: Invalid input }
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthResponse" }
+
+
+  /auth/users:
+    get:
+      tags: [UserManagement]
+      summary: List all system users
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/User" }
+
+  /auth/users/{id}:
+    get:
+      tags: [UserManagement]
+      summary: Get a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: User found }
+        "404": { description: User not found }
+
+    put:
+      tags: [UserManagement]
+      summary: Update user details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                email: { type: string }
+                password: { type: string }
+                role:
+                  type: string
+                  enum: [patient, doctor, donor, ngo, admin]
+                is_active: { type: boolean }
+      responses:
+        "200": { description: User updated }
+
+    delete:
+      tags: [UserManagement]
+      summary: Delete a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: User deleted }
+
+
+  /mental/counseling:
+    post:
+      tags: [Counseling]
+      summary: Create new counseling request
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CounselingRequestInput" }
+      responses:
+        "201": { description: Request created }
+
+    get:
+      tags: [Counseling]
+      summary: List counseling requests
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CounselingRequest" }
+
+  /mental/counseling/{id}/assign:
+    post:
+      tags: [Counseling]
+      summary: Assign counselor (admin/doctor)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                counselorId: { type: integer }
+      responses:
+        "200": { description: Assigned successfully }
+
+  /mental/counseling/{id}/status:
+    patch:
+      tags: [Counseling]
+      summary: Update counseling request status
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [assigned, in_progress, resolved, closed]
+      responses:
+        "200": { description: Status updated }
+
+
+  /mental/support-groups:
+    get:
+      tags: [SupportGroups]
+      summary: List all support groups
+      responses:
+        "200":
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SupportGroup" }
+
+    post:
+      tags: [SupportGroups]
+      summary: Create support group
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, topic]
+              properties:
+                title: { type: string }
+                topic: { type: string }
+                description: { type: string }
+                is_private: { type: boolean }
+      responses:
+        "201": { description: Group created }
+
+  /mental/support-groups/{id}/join:
+    post:
+      tags: [SupportGroups]
+      summary: Join a support group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: Joined }
+
+
+  /mission/ngos:
+    post:
+      tags: [Missions]
+      summary: Create a new NGO (admin only)
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+      responses:
+        "201": { description: NGO created }
+        "400": { description: Invalid input }
+    get:
+      tags: [Missions]
+      summary: List verified NGOs (public)
+      responses:
+        "200":
+          description: List of NGOs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/NGO' }
+
+  /mission/ngos/{id}/verify:
+    patch:
+      tags: [Missions]
+      summary: Verify an NGO (admin only)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: NGO verified }
+
+  /mission/missions:
+    post:
+      tags: [Missions]
+      summary: Create a surgical mission (admin or ngo)
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, specialty, location, start_date, end_date]
+              properties:
+                title: { type: string }
+                specialty: { type: string }
+                location: { type: string }
+                start_date: { type: string, format: date }
+                end_date: { type: string, format: date }
+                country: { type: string }
+                city: { type: string }
+                organizer_ngo_id: { type: integer }
+                description: { type: string }
+                is_published: { type: boolean }
+      responses:
+        "201": { description: Mission created }
+    get:
+      tags: [Missions]
+      summary: List published surgical missions (public)
+      responses:
+        "200":
+          description: List of missions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/SurgicalMission' }
+
+  /mission/missions/{id}:
+    get:
+      tags: [Missions]
+      summary: Get mission details (public)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Mission details
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SurgicalMission' }
+        "404": { description: Not found }
+
+  /mission/missions/{id}/availability:
+    post:
+      tags: [Missions]
+      summary: Doctor creates availability for missions (doctor only)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [start_at, end_at, location]
+              properties:
+                start_at: { type: string, format: date-time }
+                end_at: { type: string, format: date-time }
+                location: { type: string }
+                capacity: { type: integer }
+                notes: { type: string }
+      responses:
+        "201": { description: Availability created }
+
+  /mission/doctor/me/availability:
+    get:
+      tags: [Missions]
+      summary: List my availability (doctor only)
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200":
+          description: Doctor availabilities
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/MissionAvailability' }
+
+  /mission/availability/{id}/requests:
+    post:
+      tags: [Missions]
+      summary: Patient creates a mission request (patient only)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes: { type: string }
+      responses:
+        "201": { description: Request created }
+    get:
+      tags: [Missions]
+      summary: List requests for an availability (admin or ngo)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: List of requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/MissionRequest' }
+
+  /mission/requests/{id}/status:
+    patch:
+      tags: [Missions]
+      summary: Update request status (admin or ngo)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [requested, approved, rejected, cancelled]
+      responses:
+        "200": { description: Status updated }
+
