@@ -71,8 +71,6 @@ export async function toggleUserActive(id, status) {
   return result;
 }
 
-<<<<<<< Updated upstream
-=======
 export async function countUsers() {
   const [rows] = await pool.query(
     "SELECT COUNT(*) AS cnt FROM users"
@@ -80,7 +78,6 @@ export async function countUsers() {
   return rows[0].cnt;
 }
 
->>>>>>> Stashed changes
 export default {
   findByEmail,
   checkIfEmailExists,
@@ -90,4 +87,5 @@ export default {
   deleteUser,
   listUsers,
   toggleUserActive,
+  countUsers,
 };

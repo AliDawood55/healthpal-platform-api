@@ -15,10 +15,6 @@ router.post(
   register
 );
 
-<<<<<<< Updated upstream
-router.post("/register", authenticate.optional, validate(registerSchema), register);
-=======
->>>>>>> Stashed changes
 router.post("/login", validate(loginSchema), login);
 
 router.use(authenticate);

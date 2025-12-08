@@ -1,34 +1,21 @@
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import mysql from 'mysql2/promise';
 
-import mysql from 'mysql2';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'healthpalplatformapi_db',
-  waitForConnections: true,
-  connectionLimit: parseInt(process.env.DB_CONN_LIMIT || '10', 10),
-  queueLimit: 0,
-  charset: 'utf8mb4_general_ci',
+dotenv.config({
+   path: path.resolve(__dirname, '../.env'),
 });
 
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error('Database connection error:', err.message);
-  } else {
-    console.log('Database connected successfully.');
-    connection.release();
-  }
+console.log("ENV LOADED IN DB FILE:", {
+   DB_NAME: process.env.DB_NAME,
+   DB_USER: process.env.DB_USER,
+   DB_HOST: process.env.DB_HOST,
 });
 
-<<<<<<< Updated upstream
-process.on('SIGINT', () => {
-  pool.end((err) => {
-    if (err) console.error('Error closing DB connection pool:', err.message);
-    else console.log('MySQL pool closed.');
-    process.exit(0);
-  });
-=======
 const DB_NAME = process.env.DB_NAME || 'healthpal';
 const DB_PORT = parseInt(process.env.DB_PORT || '3306', 10);
 const AUTO_CREATE_DB = (process.env.DB_AUTOCREATE ?? 'true').toLowerCase() !== 'false';
@@ -84,7 +71,6 @@ process.on('SIGINT', async () => {
    } finally {
       process.exit(0);
    }
->>>>>>> Stashed changes
 });
 
 export default pool;

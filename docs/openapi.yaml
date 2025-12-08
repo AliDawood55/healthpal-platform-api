@@ -305,12 +305,19 @@ paths:
                 counselorId: { type: integer }
       responses:
         "200": { description: Assigned successfully }
-
+        
   /mental/counseling/{id}/status:
     patch:
       tags: [Counseling]
       summary: Update counseling request status
       security: [{ BearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Counseling request ID
       requestBody:
         required: true
         content:
@@ -323,8 +330,8 @@ paths:
                   type: string
                   enum: [assigned, in_progress, resolved, closed]
       responses:
-        "200": { description: Status updated }
-
+        "200":
+          description: Status updated
 
   /mental/support-groups:
     get:
