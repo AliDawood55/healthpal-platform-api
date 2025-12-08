@@ -1,8 +1,7 @@
 import pool from "../Config/DBconnection.js";
 
-
 export async function findByEmail(email) {
-  const [rows] = await pool.promise().query(
+  const [rows] = await pool.query(
     "SELECT id, name, email, password_hash, role, is_active FROM users WHERE email = ?",
     [email]
   );
@@ -10,7 +9,7 @@ export async function findByEmail(email) {
 }
 
 export async function checkIfEmailExists(email) {
-  const [rows] = await pool.promise().query(
+  const [rows] = await pool.query(
     "SELECT id FROM users WHERE email = ?",
     [email]
   );
@@ -18,7 +17,7 @@ export async function checkIfEmailExists(email) {
 }
 
 export async function findById(id) {
-  const [rows] = await pool.promise().query(
+  const [rows] = await pool.query(
     "SELECT id, name, email, role, is_active, created_at, updated_at FROM users WHERE id = ?",
     [id]
   );
@@ -26,7 +25,7 @@ export async function findById(id) {
 }
 
 export async function createUser(name, email, hashedPassword, role) {
-  const [result] = await pool.promise().query(
+  const [result] = await pool.query(
     `INSERT INTO users (name, email, password_hash, role, is_active, created_at, updated_at)
      VALUES (?, ?, ?, ?, 1, NOW(), NOW())`,
     [name, email, hashedPassword, role]
@@ -47,31 +46,41 @@ export async function updateUser(id, { name, email, password_hash, role, is_acti
   query += " WHERE id = ?";
   params.push(id);
 
-  const [result] = await pool.promise().query(query, params);
+  const [result] = await pool.query(query, params);
   return result;
 }
 
 export async function deleteUser(id) {
-  const [result] = await pool.promise().query("DELETE FROM users WHERE id = ?", [id]);
+  const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
   return result;
 }
 
 export async function listUsers(activeOnly = false) {
   const condition = activeOnly ? "WHERE is_active = 1" : "";
-  const [rows] = await pool.promise().query(
+  const [rows] = await pool.query(
     `SELECT id, name, email, role, is_active, created_at, updated_at FROM users ${condition}`
   );
   return rows;
 }
 
 export async function toggleUserActive(id, status) {
-  const [result] = await pool.promise().query(
+  const [result] = await pool.query(
     "UPDATE users SET is_active = ?, updated_at = NOW() WHERE id = ?",
     [status ? 1 : 0, id]
   );
   return result;
 }
 
+<<<<<<< Updated upstream
+=======
+export async function countUsers() {
+  const [rows] = await pool.query(
+    "SELECT COUNT(*) AS cnt FROM users"
+  );
+  return rows[0].cnt;
+}
+
+>>>>>>> Stashed changes
 export default {
   findByEmail,
   checkIfEmailExists,
