@@ -57,7 +57,6 @@ try {
    throw err;
 }
 
-// إغلاق الـ pool عند إيقاف السيرفر
 process.on('SIGINT', async () => {
    try {
       await pool.end();

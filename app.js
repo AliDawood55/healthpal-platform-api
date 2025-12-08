@@ -13,12 +13,20 @@ import sponsorshipRouter from './Routes/SponsorshipRouter.js';
 import mentalRouter from './Routes/MentalHealthRouter.js';
 import AuthRouter from './Routes/AuthRouter.js';
 import MissionRouter from './Routes/MissionRouter.js';
+import appointmentRouter from './Routes/AppointmentRouter.js';
 
 import { notFound } from './Middleware/logger.js';
 import errorHandler from './Middleware/errorHandler.js';
 
+import authenticate from './Middleware/authenticate.js'; 
+import auth from './Middleware/auth.js';
+
+
+
 dotenv.config();
 console.log('DEBUG ENV CHECK =', process.env.DB_NAME, process.env.DB_USER);
+console.log('DEBUG GOOGLE_API_KEY present? ', !!process.env.GOOGLE_API_KEY);
+console.log('DEBUG GOOGLE_API_KEY prefix: ', String(process.env.GOOGLE_API_KEY || '').slice(0, 5));
 
 const app = express();
 
@@ -37,7 +45,11 @@ app.get('/', (req, res) => {
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+app.use(authenticate.optional); 
+app.use(auth);
+
 app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/appointments', appointmentRouter);
 app.use('/api/v1/consult', consultRouter);
 app.use('/api/v1/sponsorship', sponsorshipRouter);
 

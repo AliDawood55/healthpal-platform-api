@@ -1,6 +1,4 @@
-
 /**
- * (Role-based Access Control)
  * @param {Array} allowedRoles - associated roles allowed to access the route
  */
 export default function authorizeRole(allowedRoles = []) {

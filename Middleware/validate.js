@@ -1,8 +1,6 @@
-// /Middleware/validate.js
 import Joi from "joi";
 
 /**
- * Generic Joi validation middleware
  * @param {Joi.ObjectSchema} schema - Joi validation schema
  */
 const validate = (schema) => {

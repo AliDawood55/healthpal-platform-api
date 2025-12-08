@@ -1,4 +1,4 @@
-import Router from 'express';
+import { Router } from 'express';
 import ctrl from '../Controllers/ConsultController.js';
 import v from '../Validator/consultValidation.js';
 

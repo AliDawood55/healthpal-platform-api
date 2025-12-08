@@ -27,7 +27,7 @@ export async function findById(id) {
 export async function createUser(name, email, hashedPassword, role) {
   const [result] = await pool.query(
     `INSERT INTO users (name, email, password_hash, role, is_active, created_at, updated_at)
-     VALUES (?, ?, ?, ?, 1, NOW(), NOW())`,
+      VALUES (?, ?, ?, ?, 1, NOW(), NOW())`,
     [name, email, hashedPassword, role]
   );
   return result;
