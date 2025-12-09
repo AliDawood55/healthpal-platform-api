@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { countUsers } from "../Models/UserModel.js";
+
 import {
   findByEmail,
   checkIfEmailExists,
@@ -26,12 +28,28 @@ export async function register(req, res) {
 
     const { name, email, password, role } = value;
 
+    // === NEW: Allow first ever admin bootstrap ===
+    const totalUsers = await countUsers();  
+
+    if (totalUsers === 0 && role === "admin") {
+      const hashed = await bcrypt.hash(password, 10);
+      const result = await createUser(name, email, hashed, "admin");
+
+      return res.status(201).json({
+        success: true,
+        message: "Initial admin created successfully",
+        data: { id: result.insertId, email, role: "admin" },
+      });
+    }
+
+    // === Existing validation for normal requests ===
     const exists = await checkIfEmailExists(email);
     if (exists.length > 0)
       return res.status(400).json({ error: "Email already registered" });
 
     const creatorRole = req.user?.role || "public";
-    const restrictedRoles = ["doctor", "ngo", `admin`];
+    const restrictedRoles = ["doctor", "ngo", "admin"];
+    
     if (restrictedRoles.includes(role) && creatorRole !== "admin") {
       return res.status(403).json({
         error: `Only admin can create users with role: ${role}`,
@@ -52,6 +70,7 @@ export async function register(req, res) {
   }
 }
 
+
 export async function login(req, res) {
   try {
     const { error, value } = loginSchema.validate(req.body);
@@ -69,7 +88,7 @@ export async function login(req, res) {
     const user = rows[0];
      //console.log('login attempt user row:', user);//check user 
 
-    const valid = await bcrypt.compare(password, user.password_hash);
+    const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
     const token = jwt.sign(
@@ -123,7 +142,7 @@ export async function editUser(req, res) {
     const data = { name, email, role, is_active };
 
     if (password) {
-      data.password_hash = await bcrypt.hash(password, 10);
+      data.password = await bcrypt.hash(password, 10);
     }
 
     const result = await updateUser(req.params.id, data);

@@ -1,8 +1,9 @@
 {
   "name": "healthpal-platform-api",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "vitest run",
     "dev": "nodemon server.js",
@@ -22,7 +23,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/AliDawood55/healthpal-platform-api/issues"
   },
@@ -39,7 +39,8 @@
     "joi": "^18.0.1",
     "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.15.3",
+    "morgan": "^1.10.1",
+    "mysql2": "^3.5.3",
     "pino": "^9.12.0",
     "pino-http": "^10.5.0",
     "prom-client": "^15.1.3",

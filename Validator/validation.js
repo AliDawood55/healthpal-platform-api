@@ -1,14 +1,16 @@
 // Validation schemas
-
-import { z } from 'zod';
-import Joi from 'joi';
+import { z } from "zod";
+import Joi from "joi";
 
 // ---------------- ZOD SCHEMAS (users, alerts, guides) ----------------
 
 export const createUserSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(150),
-  email: z.string().email('Invalid email').max(200),
-  password: z.string().min(6, 'Password must be at least 6 characters').max(255),
+  name: z.string().min(1, "Name is required").max(150),
+  email: z.string().email("Invalid email").max(200),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .max(255),
 });
 
 export const updateUserSchema = z
@@ -18,7 +20,7 @@ export const updateUserSchema = z
     password: z.string().min(6).max(255).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
-    message: 'At least one field must be provided',
+    message: "At least one field must be provided",
   });
 
 export function validate(schema, data) {
@@ -27,7 +29,7 @@ export function validate(schema, data) {
     return {
       ok: false,
       errors: result.error.issues.map((i) => ({
-        path: i.path.join('.'),
+        path: i.path.join("."),
         message: i.message,
       })),
     };
@@ -39,7 +41,7 @@ export function validate(schema, data) {
 export const createAlertSchema = z.object({
   title: z.string().min(3).max(200),
   message: z.string().min(3).max(2000),
-  severity: z.enum(['info', 'warning', 'critical']),
+  severity: z.enum(["info", "warning", "critical"]),
   region: z.string().max(120).optional(),
 });
 
@@ -47,25 +49,25 @@ export const updateAlertSchema = z
   .object({
     title: z.string().min(3).max(200).optional(),
     message: z.string().min(3).max(2000).optional(),
-    severity: z.enum(['info', 'warning', 'critical']).optional(),
+    severity: z.enum(["info", "warning", "critical"]).optional(),
     region: z.string().max(120).optional(),
   })
   .refine((d) => Object.keys(d).length > 0, {
-    message: 'At least one field is required',
+    message: "At least one field is required",
   });
 
 // Health guides
 export const createGuideSchema = z.object({
   title: z.string().min(3).max(200),
   category: z.enum([
-    'first_aid',
-    'chronic_care',
-    'nutrition',
-    'maternal',
-    'mental_health',
-    'general',
+    "first_aid",
+    "chronic_care",
+    "nutrition",
+    "maternal",
+    "mental_health",
+    "general",
   ]),
-  language: z.enum(['ar', 'en']).optional(),
+  language: z.enum(["ar", "en"]).optional(),
   content: z.string().min(10).max(10000),
 });
 
@@ -74,53 +76,54 @@ export const updateGuideSchema = z
     title: z.string().min(3).max(200).optional(),
     category: z
       .enum([
-        'first_aid',
-        'chronic_care',
-        'nutrition',
-        'maternal',
-        'mental_health',
-        'general',
+        "first_aid",
+        "chronic_care",
+        "nutrition",
+        "maternal",
+        "mental_health",
+        "general",
       ])
       .optional(),
-    language: z.enum(['ar', 'en']).optional(),
+    language: z.enum(["ar", "en"]).optional(),
     content: z.string().min(10).max(10000).optional(),
   })
   .refine((d) => Object.keys(d).length > 0, {
-    message: 'At least one field is required',
+    message: "At least one field is required",
   });
 
 // ---------------- JOI SCHEMAS (counseling, auth, NGO, etc.) ----------------
 
 export const counselingRequestSchema = Joi.object({
   topic: Joi.string().min(3).max(255).required().messages({
-    'string.empty': 'Topic is required',
-    'any.required': 'Topic is required',
+    "string.empty": "Topic is required",
+    "any.required": "Topic is required",
   }),
   message: Joi.string().min(5).required().messages({
-    'string.empty': 'Message is required',
-    'any.required': 'Message is required',
+    "string.empty": "Message is required",
+    "any.required": "Message is required",
   }),
   for_children: Joi.boolean().optional(),
-  severity: Joi.string().valid('mild', 'moderate', 'severe').default('moderate'),
-  preferred_mode: Joi.string().valid('video', 'audio', 'chat').default('chat'),
+  severity: Joi.string().valid("mild", "moderate", "severe").default("moderate"),
+  preferred_mode: Joi.string().valid("video", "audio", "chat").default("chat"),
 }).unknown(false);
 
 export const supportGroupSchema = Joi.object({
   title: Joi.string().min(3).max(255).required().messages({
-    'string.empty': 'Group title is required',
+    "string.empty": "Group title is required",
   }),
   topic: Joi.string().min(3).max(255).required().messages({
-    'string.empty': 'Topic is required',
+    "string.empty": "Topic is required",
   }),
   description: Joi.string().min(5).max(1000).optional(),
   is_private: Joi.boolean().default(false),
 }).unknown(false);
 
 export const roleSchema = Joi.string()
-  .valid('patient', 'doctor', 'donor', 'ngo', 'admin')
+  .valid("patient", "doctor", "donor", "ngo", "admin")
   .required()
   .messages({
-    'any.only': 'Role must be one of: patient, doctor, donor, ngo, or admin',
+    "any.only":
+      "Role must be one of: patient, doctor, donor, ngo, or admin",
   });
 
 export const registerSchema = Joi.object({
@@ -147,7 +150,7 @@ export const requestSchema = Joi.object({
 
 export const ngoSchema = Joi.object({
   name: Joi.string().min(2).max(255).required().messages({
-    'string.empty': 'NGO name is required',
+    "string.empty": "NGO name is required",
   }),
 }).unknown(false);
 
@@ -173,3 +176,16 @@ export const availabilitySchema = Joi.object({
   capacity: Joi.number().integer().min(1).optional(),
   notes: Joi.string().max(1000).optional(),
 }).unknown(false);
+
+export const validateCreateUser = (req, res, next) => {
+  const { error, value } = registerSchema.validate(req.body, {
+    abortEarly: false,
+  });
+  if (error) {
+    return res.status(422).json({
+      errors: error.details.map((d) => d.message),
+    });
+  }
+  req.body = value;
+  next();
+};

@@ -3,7 +3,6 @@ import MedicationController from "../Controllers/MedicationController.js";
 import validate from "../Middleware/validate.js";
 import authenticate from "../Middleware/authenticate.js";
 import authorizeRole from "../Middleware/authorizeRole.js";
-
 import { createRequestSchema } from "../Validator/medicationValidator.js";
 
 const router = express.Router();
@@ -13,7 +12,7 @@ const router = express.Router();
 // ===============================
 
 // List requests
-// Patients can see (their) requests, and medical / management roles can browse all
+// Patients see their requests; medical/admin roles see all
 router.get(
   "/requests",
   authenticate,
@@ -21,7 +20,7 @@ router.get(
   MedicationController.getAllRequests
 );
 
-// Create a new medication request (only patients)
+// Create a new medication request (patients only)
 router.post(
   "/requests",
   authenticate,
@@ -34,8 +33,7 @@ router.post(
 // Medication Listings
 // ===============================
 
-// List available medication listings
-// All authenticated roles can view listings
+// List available listings
 router.get(
   "/listings",
   authenticate,
@@ -43,8 +41,7 @@ router.get(
   MedicationController.getAllListings
 );
 
-// Create a new listing
-// Donors / NGOs / Admins can publish listings
+// Create a listing (donor/ngo/admin)
 router.post(
   "/listings",
   authenticate,
@@ -57,7 +54,6 @@ router.post(
 // ===============================
 
 // View matches
-// Everyone involved can see matches
 router.get(
   "/matches",
   authenticate,
@@ -65,8 +61,7 @@ router.get(
   MedicationController.getAllMatches
 );
 
-// Create a match between a request and a listing
-// Typically done by doctor / NGO / admin
+// Create a match (doctor/ngo/admin)
 router.post(
   "/matches",
   authenticate,
@@ -74,8 +69,7 @@ router.post(
   MedicationController.createMatch
 );
 
-// Update match status (accepted, completed, cancelled, etc.)
-// Also restricted to doctor / NGO / admin
+// Update a match status (doctor/ngo/admin)
 router.put(
   "/matches/:id",
   authenticate,
