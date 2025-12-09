@@ -13,7 +13,7 @@ export default {
         data.case_id,
         data.donor_id,
         data.amount,
-        data.payment_method, // يُخزن في payment_methode
+        data.payment_method,
         now
       ]
     );
@@ -70,4 +70,5 @@ export default {
 
     return { donations: rows, stats: agg };
   }
+
 };

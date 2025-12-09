@@ -50,4 +50,5 @@ export const validateCreateDonation = (req, res, next) => {
 export default {
   validateCreateCase,
   validateCreateDonation,
+
 };

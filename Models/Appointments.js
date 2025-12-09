@@ -38,4 +38,5 @@ export default {
 
     return this.findById(res.insertId);
   },
+
 };

@@ -10,5 +10,6 @@ export default function auth(req, res, next) {
   const role = roleHeader ? roleHeader.toString() : 'patient';
 
   req.user = { id, role };
+
   next();
 }

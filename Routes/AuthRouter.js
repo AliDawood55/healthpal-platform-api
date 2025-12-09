@@ -7,8 +7,15 @@ import {registerSchema, loginSchema, updateUserSchema,} from "../Validator/userV
 
 const router = express.Router();
 
+//router.post("/register",  validate(registerSchema), register)
+router.post(
+  "/register",
+  authenticate.optional,
+  validate(registerSchema),
+  register
+);
 
-router.post("/register",  validate(registerSchema), register)
+
 router.post("/login", validate(loginSchema), login);
 
 router.use(authenticate);

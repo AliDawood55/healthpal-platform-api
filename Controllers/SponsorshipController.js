@@ -121,4 +121,4 @@ export default {
   createDonation,
   listCaseDonations,
   getDonorSummary
-};
+}

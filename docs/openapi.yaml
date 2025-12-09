@@ -24,6 +24,8 @@ tags:
     description: Join and list support groups
   - name: Missions
     description: Partnerships with NGOs and surgical missions
+  - name: Medication
+    description: Medication data and lookup (OpenFDA)
 
 components:
   securitySchemes:
@@ -141,6 +143,29 @@ components:
           enum: [requested, approved, rejected, cancelled]
         notes: { type: string }
         created_at: { type: string, format: date-time }
+
+    MedicationOpenFDAItem:
+      type: object
+      properties:
+        id: { type: string }
+        brand_name: { type: string }
+        generic_name: { type: string }
+        manufacturer_name: { type: string }
+        dosage_and_administration: { type: string }
+        indications_and_usage: { type: string }
+        warnings: { type: string }
+        adverse_reactions: { type: string }
+        openfda: { type: object }
+        source: { type: string }
+
+    MedicationOpenFDAResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        count: { type: integer }
+        results:
+          type: array
+          items: { $ref: '#/components/schemas/MedicationOpenFDAItem' }
 
 security:
   - BearerAuth: []
@@ -305,12 +330,19 @@ paths:
                 counselorId: { type: integer }
       responses:
         "200": { description: Assigned successfully }
-
+        
   /mental/counseling/{id}/status:
     patch:
       tags: [Counseling]
       summary: Update counseling request status
       security: [{ BearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Counseling request ID
       requestBody:
         required: true
         content:
@@ -323,8 +355,8 @@ paths:
                   type: string
                   enum: [assigned, in_progress, resolved, closed]
       responses:
-        "200": { description: Status updated }
-
+        "200":
+          description: Status updated
 
   /mental/support-groups:
     get:
@@ -568,4 +600,31 @@ paths:
                   enum: [requested, approved, rejected, cancelled]
       responses:
         "200": { description: Status updated }
+
+
+  /medication/openfda/search:
+    get:
+      tags: [Medication]
+      summary: Search medications via OpenFDA
+      description: Search OpenFDA drug labels by brand/generic/substance name. Results are normalized.
+      parameters:
+        - in: query
+          name: name
+          required: true
+          schema: { type: string }
+          description: Drug name to search for (brand or generic)
+        - in: query
+          name: limit
+          required: false
+          schema: { type: integer, default: 5 }
+          description: Maximum number of results to return (1-50)
+      responses:
+        "200":
+          description: OpenFDA search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicationOpenFDAResponse'
+        "400": { description: Bad request }
+        "500": { description: Internal server error }
 

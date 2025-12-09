@@ -17,6 +17,7 @@ console.log("ENV LOADED IN DB FILE:", {
 });
 
 const DB_NAME = process.env.DB_NAME || 'healthpal_db';
+
 const DB_PORT = parseInt(process.env.DB_PORT || '3306', 10);
 const AUTO_CREATE_DB = (process.env.DB_AUTOCREATE ?? 'true').toLowerCase() !== 'false';
 
@@ -28,14 +29,15 @@ const baseConfig = {
    waitForConnections: true,
    connectionLimit: 10,
    queueLimit: 0,
-   charset: 'utf8mb4_general_ci',
+   charset: 'utf8mb4_unicode_ci',
 };
 
 if (AUTO_CREATE_DB) {
    try {
       const adminConn = await mysql.createConnection({ ...baseConfig });
       await adminConn.query(
-         `CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;`
+         `CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` 
+            CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
       );
       await adminConn.end();
       console.log(`Database ensured: ${DB_NAME}`);
