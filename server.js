@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 import http from 'http';
 
 import medicationRoutes from './Routes/medication.routes.js';
-import equipmentRoutes from './Routes/equipment.js';
+import equipmentRoutes from './Routes/equipmentRouter.js';
 import userRoutes from './Routes/UsersRouter.js';
 import alertsRoutes from './Routes/AlertsRouter.js';
 import guidesRoutes from './Routes/GuidesRouter.js';
