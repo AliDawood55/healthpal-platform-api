@@ -13,7 +13,7 @@ import {
   listUsers,
   toggleUserActive,
 } from "../Models/UserModel.js";
-import { registerSchema, loginSchema } from "../Validator/validation.js";
+import { registerSchema, loginSchema } from "../Validator/userValidation.js";
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;

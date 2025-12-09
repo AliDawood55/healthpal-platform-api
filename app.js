@@ -9,6 +9,14 @@ import mentalRouter from "./Routes/MentalHealthRouter.js";
 import AuthRouter from "./Routes/AuthRouter.js";
 import errorHandler from "./Middleware/errorHandler.js";
 import MissionRouter from "./Routes/MissionRouter.js";
+import AlertsRouter from "./Routes/AlertsRouter.js";
+import ConsultRouter from "./Routes/ConsultRouter.js";
+import GuidesRouter from "./Routes/GuidesRouter.js";
+import SponsorshipRouter from "./Routes/SponsorshipRouter.js";
+import UsersRouter from "./Routes/UsersRouter.js";
+import medicationRouter from "./Routes/medication.routes.js";
+import equipmentRouter from "./Routes/equipment.js";
+import openfdaRouter from "./Routes/openfdaRouter.js";
 
 dotenv.config();
 
@@ -34,6 +42,14 @@ app.get("/", (req, res) => {
 app.use("/api/v1/mental", mentalRouter);
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/mission", MissionRouter);
+app.use("/api/v1/alerts", AlertsRouter);
+app.use("/api/v1/consult", ConsultRouter);
+app.use("/api/v1/guides", GuidesRouter);
+app.use("/api/v1/sponsorship", SponsorshipRouter);
+app.use("/api/v1/users", UsersRouter);
+app.use("/api/v1/medication", medicationRouter);
+app.use("/api/v1/equipment", equipmentRouter);
+app.use("/api/v1/medication/openfda", openfdaRouter);
 
 // Global error handler
 app.use(errorHandler);

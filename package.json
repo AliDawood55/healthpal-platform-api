@@ -10,6 +10,7 @@
     "start": "node app.js",
     "lint": "eslint .",
     "db:check": "node scripts/db-check.mjs",
+    "db:create-medication-catalog": "node scripts/run-sql.mjs",
     "db:seed": "node scripts/seed.mjs",
     "http:test": "node scripts/http-test.mjs",
     "db:wipe": "node scripts/db-wipe.mjs",
