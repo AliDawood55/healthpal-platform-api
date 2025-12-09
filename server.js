@@ -6,7 +6,6 @@ import http from 'http';
 
 import medicationRoutes from './Routes/medication.routes.js';
 import equipmentRoutes from './Routes/equipmentRouter.js';
-import userRoutes from './Routes/UsersRouter.js';
 import alertsRoutes from './Routes/AlertsRouter.js';
 import guidesRoutes from './Routes/GuidesRouter.js';
 
@@ -31,7 +30,6 @@ app.get('/', (req, res) => res.send('HealthPal API is running 🚀'));
 
 app.use('/api/medications', medicationRoutes);
 app.use('/api/equipment', equipmentRoutes);
-// app.use('/api/users', userRoutes);
 app.use('/api/alerts', alertsRoutes);
 app.use('/api/guides', guidesRoutes);
 
