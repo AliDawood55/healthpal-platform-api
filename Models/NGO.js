@@ -1,7 +1,7 @@
 import pool from '../Config/DBconnection.js';
 
 export async function createNGO(name) {
-  const [result] = await pool.promise().query(
+  const [result] = await pool.query(
     `INSERT INTO ngos (name, verified, created_at) VALUES (?, 0, NOW())`,
     [name]
   );
@@ -9,14 +9,14 @@ export async function createNGO(name) {
 }
 
 export async function listVerifiedNGOs() {
-  const [rows] = await pool.promise().query(
+  const [rows] = await pool.query(
     `SELECT id, name, verified, created_at FROM ngos WHERE verified = 1 ORDER BY created_at DESC`
   );
   return rows;
 }
 
 export async function getById(id) {
-  const [rows] = await pool.promise().query(
+  const [rows] = await pool.query(
     `SELECT id, name, verified, created_at FROM ngos WHERE id = ?`,
     [id]
   );
@@ -24,7 +24,7 @@ export async function getById(id) {
 }
 
 export async function verifyNGO(id) {
-  const [result] = await pool.promise().query(
+  const [result] = await pool.query(
     `UPDATE ngos SET verified = 1 WHERE id = ?`,
     [id]
   );

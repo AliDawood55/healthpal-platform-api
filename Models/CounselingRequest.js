@@ -3,7 +3,7 @@ import pool from '../Config/DBconnection.js';
 class CounselingRequest {
 
   static async create(data) {
-    const p = pool.promise();
+    const p = pool;
     const [res] = await p.query(
       `INSERT INTO counseling_requests (created_by_user_id, topic, details, for_children, severity, status, created_at)
        VALUES (?, ?, ?, ?, ?, 'open', NOW())`,
@@ -13,7 +13,7 @@ class CounselingRequest {
   }
 
   static async listForUser(userId, status = null) {
-    const p = pool.promise();
+    const p = pool;
     const [rows] = await p.query(
       `SELECT id, topic, details, for_children, severity, status,
               assigned_counselor_user_id, created_at
@@ -26,7 +26,7 @@ class CounselingRequest {
   }
 
   static async listAll(status = null) {
-    const p = pool.promise();
+    const p = pool;
     const [rows] = await p.query(
       `SELECT cr.id, cr.topic, cr.details, cr.for_children, cr.severity, cr.status,
               cr.assigned_counselor_user_id, cr.created_at,
@@ -43,13 +43,13 @@ class CounselingRequest {
   }
 
   static async getById(id) {
-    const p = pool.promise();
+    const p = pool;
     const [rows] = await p.query(`SELECT * FROM counseling_requests WHERE id = ?`, [id]);
     return rows[0];
   }
 
   static async assignCounselor(requestId, user, counselorId = null) {
-    const p = pool.promise();
+    const p = pool;
     const [[row]] = await p.query(
       `SELECT id, assigned_counselor_user_id, status FROM counseling_requests WHERE id = ?`,
       [requestId]
@@ -75,7 +75,7 @@ class CounselingRequest {
     if (!allowed.includes(newStatus))
       throw Object.assign(new Error('Invalid status'), { status: 400 });
 
-    const p = pool.promise();
+    const p = pool;
     const [[row]] = await p.query(
       `SELECT id, assigned_counselor_user_id FROM counseling_requests WHERE id = ?`,
       [id]

@@ -2,7 +2,7 @@ import pool from "../Config/DBconnection.js";
 
 class SupportGroupMembers {
   static async addMember(groupId, userId) {
-    const p = pool.promise();
+    const p = pool;
     const [[exists]] = await p.query(
       `SELECT id FROM support_group_members WHERE group_id = ? AND user_id = ?`,
       [groupId, userId]
@@ -17,7 +17,7 @@ class SupportGroupMembers {
   }
 
   static async removeMember(groupId, userId) {
-    const p = pool.promise();
+    const p = pool;
     const [res] = await p.query(
       `DELETE FROM support_group_members WHERE group_id = ? AND user_id = ?`,
       [groupId, userId]
@@ -26,7 +26,7 @@ class SupportGroupMembers {
   }
 
   static async isMember(groupId, userId) {
-    const p = pool.promise();
+    const p = pool;
     const [[row]] = await p.query(
       `SELECT id FROM support_group_members WHERE group_id = ? AND user_id = ?`,
       [groupId, userId]
@@ -35,7 +35,7 @@ class SupportGroupMembers {
   }
 
   static async listMembers(groupId) {
-    const p = pool.promise();
+    const p = pool;
     const [rows] = await p.query(
       `SELECT u.id, u.name, u.role, m.joined_at
        FROM support_group_members m

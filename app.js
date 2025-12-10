@@ -23,6 +23,8 @@ import mentalRouter from './Routes/MentalHealthRouter.js';
 import AuthRouter from './Routes/AuthRouter.js';
 import MissionRouter from './Routes/MissionRouter.js';
 import openfdaRouter from './Routes/openfdaRouter.js';
+import supportGroupsRouter from './Routes/SupportGroupsRouter.js';
+import supportGroupMembersRouter from './Routes/SupportGroupMembersRouter.js';
 
 // Middleware
 import { notFound } from './Middleware/logger.js';
@@ -63,6 +65,7 @@ app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/appointments', appointmentRouter);
 app.use('/api/v1/consult', consultRouter);
 app.use('/api/v1/sponsorship', sponsorshipRouter);
+app.use('/api/v1/support-groups', supportGroupMembersRouter);
 
 app.use('/api/v1/mental', mentalRouter);
 app.use('/api/v1/auth', AuthRouter);
@@ -74,6 +77,9 @@ app.use('/api/equipment', equipmentRoutes);
 app.use('/api/alerts', alertsRoutes);
 app.use('/api/guides', guidesRoutes);
 app.use('/api/v1/medication/openfda', openfdaRouter);
+
+// SupportGroups (non-versioned)
+app.use('/api/support-groups', supportGroupsRouter);
 
 // 404 + Error handler
 app.use(notFound);

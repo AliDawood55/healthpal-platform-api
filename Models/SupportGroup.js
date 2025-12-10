@@ -4,7 +4,7 @@ import SupportGroupMembers from "./SupportGroupMembers.js";
 class SupportGroup {
 
   static async create(data) {
-    const p = pool.promise();
+    const p = pool;
     const [ins] = await p.query(
       `INSERT INTO support_groups 
         (title, topic, description, is_private, created_by_user_id, created_at)
@@ -31,7 +31,7 @@ class SupportGroup {
   }
 
   static async listAll() {
-    const p = pool.promise();
+    const p = pool;
     const [rows] = await p.query(
       `SELECT sg.id, sg.title, sg.topic, sg.description, sg.is_private, sg.created_at,
               (SELECT COUNT(*) FROM support_group_members m WHERE m.group_id = sg.id) AS members_count
@@ -42,7 +42,7 @@ class SupportGroup {
   }
 
   static async getGroup(groupId) {
-    const p = pool.promise();
+    const p = pool;
     const [rows] = await p.query(
       `SELECT id, title, topic, description, is_private, created_at
        FROM support_groups
