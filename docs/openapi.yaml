@@ -12,6 +12,8 @@ info:
 servers:
   - url: http://localhost:3001/api/v1
     description: Local development server
+  - url: http://localhost:4000
+    description: Local development server (non-versioned endpoints)
 
 tags:
   - name: Auth
@@ -166,6 +168,35 @@ components:
         results:
           type: array
           items: { $ref: '#/components/schemas/MedicationOpenFDAItem' }
+
+    GroupMember:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        role: { type: string }
+        joined_at: { type: string, format: date-time }
+      example:
+        id: 12
+        name: "Alice Smith"
+        role: "patient"
+        joined_at: "2024-01-10T12:34:56Z"
+
+    JoinRequest:
+      type: object
+      required: [userId]
+      properties:
+        userId: { type: integer }
+      example:
+        userId: 123
+
+    LeaveRequest:
+      type: object
+      required: [userId]
+      properties:
+        userId: { type: integer }
+      example:
+        userId: 123
 
 security:
   - BearerAuth: []
@@ -402,6 +433,121 @@ paths:
       responses:
         "200": { description: Joined }
 
+  /support-groups/{groupId}/join:
+    post:
+      tags: [SupportGroups]
+      summary: Join a support group (by userId)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinRequest'
+            examples:
+              joinExample:
+                value:
+                  userId: 123
+      responses:
+        "201":
+          description: Joined successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  message: { type: string }
+              examples:
+                success:
+                  value:
+                    success: true
+                    message: "Joined successfully"
+        "400": { description: Bad request }
+        "401": { description: Authorization token required }
+        "403": { description: Forbidden }
+        "404": { description: Group not found }
+        "409": { description: Already a member }
+
+  /support-groups/{groupId}/leave:
+    post:
+      tags: [SupportGroups]
+      summary: Leave a support group (by userId)
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaveRequest'
+            examples:
+              leaveExample:
+                value:
+                  userId: 123
+      responses:
+        "200":
+          description: Left the group
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  message: { type: string }
+              examples:
+                success:
+                  value:
+                    success: true
+                    message: "Left the group"
+        "400": { description: Bad request }
+        "401": { description: Authorization token required }
+        "403": { description: Forbidden }
+        "404": { description: Group not found or Not a member }
+
+  /support-groups/{groupId}/members:
+    get:
+      tags: [SupportGroups]
+      summary: List members of a support group
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupMember'
+              examples:
+                example:
+                  value:
+                    - id: 12
+                      name: "Alice Smith"
+                      role: "patient"
+                      joined_at: "2024-01-10T12:34:56Z"
+                    - id: 45
+                      name: "Dr. Omar"
+                      role: "doctor"
+                      joined_at: "2024-02-02T09:00:00Z"
+        "401": { description: Authorization required }
+        "403": { description: Forbidden (not a member) }
+        "404": { description: Group not found }
+
 
   /mission/ngos:
     post:
@@ -627,4 +773,3 @@ paths:
                 $ref: '#/components/schemas/MedicationOpenFDAResponse'
         "400": { description: Bad request }
         "500": { description: Internal server error }
-

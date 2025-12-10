@@ -1,4 +1,3 @@
-
 // Validation schemas
 import { z } from "zod";
 import Joi from "joi";
@@ -190,3 +189,11 @@ export const validateCreateUser = (req, res, next) => {
   req.body = value;
   next();
 };
+
+// Schema for join/leave support group requests
+export const joinLeaveMemberSchema = Joi.object({
+  userId: Joi.number().integer().required().messages({
+    'any.required': 'userId is required',
+    'number.base': 'userId must be a number',
+  }),
+}).unknown(false);
