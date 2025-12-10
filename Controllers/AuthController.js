@@ -88,7 +88,7 @@ export async function login(req, res) {
     const user = rows[0];
      //console.log('login attempt user row:', user);//check user 
 
-    const valid = await bcrypt.compare(password, user.password_hash);
+    const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: "Invalid credentials" });
 
     const token = jwt.sign(
@@ -142,7 +142,7 @@ export async function editUser(req, res) {
     const data = { name, email, role, is_active };
 
     if (password) {
-      data.password_hash = await bcrypt.hash(password, 10);
+      data.password = await bcrypt.hash(password, 10);
     }
 
     const result = await updateUser(req.params.id, data);

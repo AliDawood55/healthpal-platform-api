@@ -84,7 +84,7 @@ const PORT = process.env.PORT || 4000;
 
 if (process.env.NODE_ENV !== 'test') {
   server.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
   });
 }
 

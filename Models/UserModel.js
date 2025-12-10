@@ -2,11 +2,13 @@ import pool from "../Config/DBconnection.js";
 
 export async function findByEmail(email) {
   const [rows] = await pool.query(
-    "SELECT id, name, email, password_hash, role, is_active FROM users WHERE email = ?",
+    `SELECT id , name, email, password_hash AS password, role, is_active FROM users
+      WHERE email = ?`,
     [email]
   );
   return rows;
 }
+
 
 export async function checkIfEmailExists(email) {
   const [rows] = await pool.query(

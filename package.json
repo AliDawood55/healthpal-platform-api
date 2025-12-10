@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "vitest run",
     "dev": "nodemon app.js",
     "start": "node app.js",
+
     "lint": "eslint .",
     "db:check": "node scripts/db-check.mjs",
     "db:create-medication-catalog": "node scripts/run-sql.mjs",

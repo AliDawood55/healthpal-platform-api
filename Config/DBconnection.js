@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import mysql from 'mysql2/promise';
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -22,14 +23,14 @@ const DB_PORT = parseInt(process.env.DB_PORT || '3306', 10);
 const AUTO_CREATE_DB = (process.env.DB_AUTOCREATE ?? 'true').toLowerCase() !== 'false';
 
 const baseConfig = {
-   host: process.env.DB_HOST || '127.0.0.1',
-   port: DB_PORT,
-   user: process.env.DB_USER || 'root',
-   password: process.env.DB_PASSWORD || '',
-   waitForConnections: true,
-   connectionLimit: 10,
-   queueLimit: 0,
-   charset: 'utf8mb4_unicode_ci',
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: DB_PORT,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    charset: 'utf8mb4_unicode_ci',
 };
 
 if (AUTO_CREATE_DB) {
@@ -45,6 +46,7 @@ if (AUTO_CREATE_DB) {
       console.error('Error ensuring database exists:', err);
       throw err;
    }
+
 }
 
 const dbConfig = { ...baseConfig, database: DB_NAME };
@@ -68,6 +70,7 @@ process.on('SIGINT', async () => {
    } finally {
       process.exit(0);
    }
+
 });
 
 export default pool;
