@@ -1,6 +1,6 @@
 # healthpal-platform-api
 # OverView 
-**HealthPal** is a backend RESTful API for a digital healthcare platform that connects **patients, clinicians, donors, NGOs, and volunteers**.
+**HealthPal** is a backend RESTful API for a digital healthcare platform that connects **patients, clinicians, donors, and volunteers**.
 - User registration, authentication, and role-based access control (admin, doctor, nurse, patient, donor).
 - Appointment booking between patients and doctors.
 - Remote medical consultations (sessions + chat messages).
