@@ -4,7 +4,7 @@ const createAppointmentSchema = Joi.object({
   patient_id: Joi.number().integer().required(),
   doctor_id: Joi.number().integer().required(),
   scheduled_at: Joi.string().required(),
-  status: Joi.string().required(),
+  status: Joi.string().optional(),
   notes: Joi.string().allow('', null),
 });
 
