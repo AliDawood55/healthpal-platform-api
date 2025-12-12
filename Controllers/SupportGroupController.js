@@ -42,20 +42,16 @@ export async function listSupportGroups(req, res, next) {
 }
 
 
-/*
-  Join Support Group
-  ---------------------------------------------------------- */
+
 export async function joinSupportGroup(req, res, next) {
   try {
     const groupId = req.params.id || req.params.groupId;
 
-    // Body may contain userId per new API; default to acting user
     const bodyUserId = req.body && req.body.userId ? Number(req.body.userId) : null;
     const actingUserId = req.user && req.user.id ? Number(req.user.id) : null;
 
     const userId = bodyUserId || actingUserId;
 
-    // If client provided a different userId, only allow admins/ngos to act on behalf
     if (bodyUserId && bodyUserId !== actingUserId) {
       const allowed = ["admin", "ngo"];
       if (!req.user || !allowed.includes(req.user.role)) {
@@ -63,7 +59,6 @@ export async function joinSupportGroup(req, res, next) {
       }
     }
 
-    // Validate group existence
     try {
       await SupportGroup.getGroup(groupId);
     } catch (err) {
@@ -90,7 +85,6 @@ export async function leaveSupportGroup(req, res, next) {
 
     const userId = bodyUserId || actingUserId;
 
-    // If acting on behalf of someone else, only admin/ngo allowed
     if (bodyUserId && bodyUserId !== actingUserId) {
       const allowed = ["admin", "ngo"];
       if (!req.user || !allowed.includes(req.user.role)) {
@@ -98,7 +92,6 @@ export async function leaveSupportGroup(req, res, next) {
       }
     }
 
-    // Validate group existence
     try {
       await SupportGroup.getGroup(groupId);
     } catch (err) {
@@ -120,7 +113,6 @@ export async function listGroupMembers(req, res, next) {
   try {
     const groupId = req.params.id || req.params.groupId;
 
-    // Validate group existence
     try {
       await SupportGroup.getGroup(groupId);
     } catch (err) {
@@ -129,11 +121,9 @@ export async function listGroupMembers(req, res, next) {
 
     const role = req.user && req.user.role ? req.user.role : 'patient';
 
-    // Roles with full access
     const fullAccess = ['admin', 'doctor', 'ngo'];
 
     if (!fullAccess.includes(role)) {
-      // Normal users must be members to view
       const isMember = await SupportGroupMembers.isMember(groupId, req.user.id);
       if (!isMember) return res.status(403).json({ error: 'Not authorized' });
     }

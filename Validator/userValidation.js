@@ -1,4 +1,3 @@
-// Validator/userValidation.js
 import Joi from "joi";
 
 

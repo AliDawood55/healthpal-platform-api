@@ -16,21 +16,18 @@ import * as MissionRequestController from '../Controllers/MissionRequestControll
 
 const router = express.Router();
 
-// NGOs
+
 router.post('/ngos', authenticate, authorizeRole(['admin']), validate(ngoSchema), NGOController.createNGO);
 router.get('/ngos', NGOController.listNGOs);
 router.patch('/ngos/:id/verify', authenticate, authorizeRole(['admin']), NGOController.verifyNGO);
 
-// Surgical missions
 router.post('/missions', authenticate, authorizeRole(['admin', 'ngo']), validate(missionSchema), SurgicalMissionController.createMission);
 router.get('/missions', SurgicalMissionController.listPublishedMissions);
 router.get('/missions/:id', SurgicalMissionController.getMissionDetails);
 
-// Doctor availability (mission id in path accepted but not enforced beyond storing availability)
 router.post('/missions/:id/availability', authenticate, authorizeRole(['doctor']), validate(availabilitySchema), MissionAvailabilityController.createAvailability);
 router.get('/doctor/me/availability', authenticate, authorizeRole(['doctor']), MissionAvailabilityController.listMyAvailability);
 
-// Mission requests
 router.post('/availability/:id/requests', authenticate, authorizeRole(['patient']), validate(requestSchema), MissionRequestController.createRequest);
 router.get('/availability/:id/requests', authenticate, authorizeRole(['admin', 'ngo']), MissionRequestController.listRequests);
 router.patch('/requests/:id/status', authenticate, authorizeRole(['admin', 'ngo']), MissionRequestController.updateRequestStatus);

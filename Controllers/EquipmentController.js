@@ -1,9 +1,7 @@
 import db from '../Config/DBconnection.js';
 
 const EquipmentController = {
-  // ===========================
-  // Equipment Items
-  // ===========================
+  
   async getAllEquipment(req, res) {
     try {
       const [rows] = await db.query('SELECT * FROM equipment_items ORDER BY created_at DESC');
@@ -36,9 +34,6 @@ const EquipmentController = {
     }
   },
 
-  // ===========================
-  // Equipment Reservations
-  // ===========================
   async getAllReservations(req, res) {
     try {
       const [rows] = await db.query(`

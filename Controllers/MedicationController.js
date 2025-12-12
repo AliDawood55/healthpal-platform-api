@@ -1,9 +1,7 @@
 import db from '../Config/DBconnection.js';
 
 const MedicationController = {
-  // ===========================
-  // Medication Requests
-  // ===========================
+ 
   async getAllRequests(req, res) {
     const query = `SELECT * FROM medication_requests ORDER BY created_at DESC`;
     try {
@@ -37,9 +35,7 @@ const MedicationController = {
     }
   },
 
-  // ===========================
-  // Medication Listings
-  // ===========================
+  
   async getAllListings(req, res) {
     const query = `SELECT * FROM medication_listings ORDER BY created_at DESC`;
     try {
@@ -76,9 +72,7 @@ const MedicationController = {
     }
   },
 
-  // ===========================
-  // Medication Matches
-  // ===========================
+  
   async getAllMatches(req, res) {
     const query = `
       SELECT mm.*, mr.medication_name AS requested_med, ml.medication_name AS listed_med

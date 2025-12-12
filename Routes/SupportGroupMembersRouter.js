@@ -6,7 +6,6 @@ import { joinLeaveMemberSchema } from '../Validator/validation.js';
 
 const router = express.Router();
 
-// Join a support group (body: { userId })
 router.post(
   '/:groupId/join',
   authenticate,
@@ -14,7 +13,6 @@ router.post(
   supportController.joinSupportGroup
 );
 
-// Leave a support group (body: { userId })
 router.post(
   '/:groupId/leave',
   authenticate,
@@ -22,7 +20,6 @@ router.post(
   supportController.leaveSupportGroup
 );
 
-// List members of a support group
 router.get('/:groupId/members', authenticate, supportController.listGroupMembers);
 
 export default router;

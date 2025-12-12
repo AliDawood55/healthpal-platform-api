@@ -6,13 +6,11 @@ export async function createAvailability(req, res, next) {
     const missionId = parseInt(req.params.id, 10);
     if (!missionId) return res.status(400).json({ error: 'Invalid mission id in path' });
 
-    // Ensure the referenced mission exists
     const mission = await SurgicalMission.getMissionById(missionId);
     if (!mission) return res.status(404).json({ error: 'Mission not found' });
 
     const body = req.body || {};
 
-    // Validate datetimes
     const start = new Date(body.start_at);
     const end = new Date(body.end_at);
     if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {

@@ -10,7 +10,6 @@ async function createMission(req, res, next) {
     const body = req.body;
     const role = req.user.role;
 
-    // If ngo role, organizer_ngo_id must match req.user.ngo_id (assumption)
     if (role === 'ngo' && !req.user.ngo_id) {
       return res.status(403).json({ error: 'NGO user must have ngo_id in token' });
     }
@@ -20,7 +19,6 @@ async function createMission(req, res, next) {
       return res.status(403).json({ error: 'NGO can only create missions for its own organization' });
     }
 
-    // date validation
     const start = parseDate(body.start_date);
     const end = parseDate(body.end_date);
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {

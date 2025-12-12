@@ -1,8 +1,6 @@
-// Models/Appointments.js
 import db from "../Config/DBconnection.js";
 
 export default {
-  // 🟢 إرجاع موعد واحد (معلومات بسيطة من جدول appointments)
   async findById(id) {
     const [rows] = await db.query(
       `SELECT *
@@ -14,7 +12,6 @@ export default {
     return rows[0] || null;
   },
 
-  // 🟢 إرجاع موعد واحد مع ربطه بجدول patients و doctors (اختياري)
   async findFullById(id) {
     const [rows] = await db.query(
       `SELECT 
@@ -31,7 +28,6 @@ export default {
     return rows[0] || null;
   },
 
-  // 🟢 إنشاء موعد جديد
   async create({ patient_id, doctor_id, scheduled_at, notes }) {
     const [res] = await db.query(
       `INSERT INTO appointments
@@ -43,7 +39,6 @@ export default {
     return this.findById(res.insertId);
   },
 
-  // 🟢 جلب جميع المواعيد (مع ربط المريض والدكتور لو حاب)
   async findAll() {
     const [rows] = await db.query(
       `SELECT 

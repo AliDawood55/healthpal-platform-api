@@ -8,7 +8,6 @@ export async function createRequest(req, res, next) {
     const availabilityId = parseInt(req.params.id, 10);
     if (!availabilityId) return res.status(400).json({ error: 'Invalid availability id' });
 
-    // ensure availability exists
     const availability = await MissionAvailability.getAvailabilityById(availabilityId);
     if (!availability) return res.status(404).json({ error: 'Availability not found' });
 
@@ -17,11 +16,10 @@ export async function createRequest(req, res, next) {
       const result = await MissionRequest.createRequest({ availability_id: availabilityId, patient_id: req.user.id, notes });
       return res.status(201).json(result);
     } catch (err) {
-      // Handle duplicate availability/patient unique constraint
       if (err && (err.code === 'ER_DUP_ENTRY' || err.errno === 1062)) {
         return res.status(409).json({ error: 'You have already requested this availability' });
       }
-      throw err; // rethrow to outer catch
+      throw err; 
     }
   } catch (err) {
     next(err);
@@ -33,7 +31,6 @@ export async function listRequests(req, res, next) {
     const availabilityId = parseInt(req.params.id, 10);
     if (!availabilityId) return res.status(400).json({ error: 'Invalid availability id' });
 
-    // Optionally could check permissions around NGO ownership; kept simple per requirements
     const rows = await MissionRequest.listByAvailability(availabilityId);
     res.json(rows);
   } catch (err) {

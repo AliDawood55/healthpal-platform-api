@@ -4,7 +4,7 @@ import pool from '../Config/DBconnection.js';
 dotenv.config();
 
 const BASE = process.env.OPENFDA_BASE_URL || 'https://api.fda.gov';
-const CACHE_TTL_MS = parseInt(process.env.OPENFDA_CACHE_TTL_MS || String(1000 * 60 * 60), 10); // default 1 hour
+const CACHE_TTL_MS = parseInt(process.env.OPENFDA_CACHE_TTL_MS || String(1000 * 60 * 60), 10); 
 
 const cache = new Map();
 
@@ -34,14 +34,14 @@ async function fetchOpenFda(path) {
   return res.json();
 }
 
-// Helper to normalize to a single short string: pick first array element, collapse whitespace, trim and cap length
+
 function extractText(v, maxLen = 500) {
   if (!v && v !== 0) return '';
   let str = '';
   if (Array.isArray(v) && v.length) str = v[0];
   else if (typeof v === 'string') str = v;
   else str = String(v);
-  // collapse newlines and multiple spaces to single space
+
   str = str.replace(/\s+/g, ' ').trim();
   if (str.length > maxLen) return str.slice(0, maxLen).trim() + '...';
   return str;
@@ -49,7 +49,7 @@ function extractText(v, maxLen = 500) {
 
 function normalizeLabel(result) {
   const of = result.openfda || {};
-  // keep internal fields needed for persistence (id, openfda raw) but clean textual fields
+
   const brand = extractText(of.brand_name);
   const generic = extractText(of.generic_name);
   const manufacturer = extractText(of.manufacturer_name);
@@ -58,10 +58,10 @@ function normalizeLabel(result) {
   const warnings = extractText(result.warnings);
 
   return {
-    // internal identifiers/payload for persistence
+    
     id: result.id || (of.product_ndc && of.product_ndc[0]) || null,
     openfda: of,
-    // cleaned fields (strings, not arrays)
+    
     brand_name: brand,
     generic_name: generic,
     manufacturer_name: manufacturer,
@@ -72,7 +72,7 @@ function normalizeLabel(result) {
   };
 }
 
-// Convert internal normalized object to the public shape required by the user
+
 function toPublicShape(item) {
   return {
     brand_name: item.brand_name || '',
@@ -89,7 +89,7 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
   const key = `openfda:search:${name.toLowerCase()}:${limit}`;
   const cached = getCache(key);
   if (cached) return cached;
-  // 1) Try DB fallback first (local catalog) unless forceFetch is true
+  
   if (!options.forceFetch) {
     try {
       const q = `%${name}%`;
@@ -98,7 +98,7 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
         [q, q, limit]
       );
       if (rows && rows.length) {
-        // Map DB rows into the public shape only (strings already stored in DB)
+        
         const publicMapped = rows.map(r => ({
           brand_name: r.brand_name || '',
           generic_name: r.generic_name || '',
@@ -113,7 +113,7 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
       }
     } catch (dbErr) {
       console.error('OpenFDA service - DB fallback error:', dbErr && dbErr.message ? dbErr.message : dbErr);
-      // proceed to external lookup
+      
     }
   }
 
@@ -140,7 +140,7 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
     }
   }
 
-  // If no results yet, try broader searches (free-text and unquoted fields)
+  
   if (!found.size) {
     const broadQueries = [
       `${name}`,
@@ -159,15 +159,15 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
           const uid = `${norm.brand_name || ''}||${norm.generic_name || ''}`;
           if (!found.has(uid)) found.set(uid, norm);
         }
-        if (found.size) break; // stop if we found anything
+        if (found.size) break; 
       } catch (err) {
-        // continue to next broad query
+        
       }
     }
   }
 
   const internalResults = Array.from(found.values()).slice(0, limit);
-  // persist results into medication_catalog for future fast lookup
+ 
   if (internalResults && internalResults.length) {
     try {
       const p = pool.promise ? pool.promise() : pool;
@@ -175,7 +175,7 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
         try {
           const openfda_raw = item.openfda ? JSON.stringify(item.openfda) : null;
           const now = new Date();
-          // try to find existing by openfda_id (if available) or by brand+generic
+          
           let exists = null;
           if (item.id) {
             const [rows] = await p.query(`SELECT id FROM medication_catalog WHERE openfda_id = ? LIMIT 1`, [item.id]);
@@ -187,7 +187,7 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
           }
 
           if (exists) {
-            // update existing
+            
             await p.query(
               `UPDATE medication_catalog SET brand_name = ?, generic_name = ?, manufacturer_name = ?, dosage_and_administration = ?, indications_and_usage = ?, warnings = ?, adverse_reactions = ?, openfda_raw = ?, source = ?, retrieved_at = ? WHERE id = ?`,
               [item.brand_name, item.generic_name, item.manufacturer_name, item.dosage_and_administration, item.indications_and_usage, item.warnings, null, openfda_raw, 'openfda', now, exists.id]
@@ -199,7 +199,7 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
             );
           }
         } catch (iErr) {
-          // ignore single-row insert errors but log
+          
           console.error('OpenFDA service - error saving to DB for item', item.brand_name || item.generic_name, iErr && iErr.message ? iErr.message : iErr);
         }
       }
@@ -208,7 +208,7 @@ export async function searchDrugByName(name, limit = 5, options = { forceFetch: 
     }
   }
 
-  // Map internal results to the public shape and cache/return that
+  
   const publicResults = internalResults.map(toPublicShape);
   setCache(key, publicResults);
   return publicResults;

@@ -30,7 +30,6 @@ export async function createUser(req, res) {
 	if (!validation.ok) return res.status(400).json({ errors: validation.errors });
 	const { name, email, password } = validation.data;
 	try {
-		// Check existing email
 		const [existing] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
 		if (existing.length) return res.status(409).json({ error: 'Email already in use' });
 		const hashed = await argon2.hash(password);

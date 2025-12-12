@@ -7,12 +7,6 @@ import { createRequestSchema } from "../Validator/medicationValidator.js";
 
 const router = express.Router();
 
-// ===============================
-// Medication Requests
-// ===============================
-
-// List requests
-// Patients see their requests; medical/admin roles see all
 router.get(
   "/requests",
   authenticate,
@@ -20,7 +14,6 @@ router.get(
   MedicationController.getAllRequests
 );
 
-// Create a new medication request (patients only)
 router.post(
   "/requests",
   authenticate,
@@ -29,11 +22,7 @@ router.post(
   MedicationController.createRequest
 );
 
-// ===============================
-// Medication Listings
-// ===============================
 
-// List available listings
 router.get(
   "/listings",
   authenticate,
@@ -41,7 +30,6 @@ router.get(
   MedicationController.getAllListings
 );
 
-// Create a listing (donor/ngo/admin)
 router.post(
   "/listings",
   authenticate,
@@ -49,11 +37,7 @@ router.post(
   MedicationController.createListing
 );
 
-// ===============================
-// Medication Matches
-// ===============================
 
-// View matches
 router.get(
   "/matches",
   authenticate,
@@ -61,7 +45,7 @@ router.get(
   MedicationController.getAllMatches
 );
 
-// Create a match (doctor/ngo/admin)
+
 router.post(
   "/matches",
   authenticate,
@@ -69,7 +53,6 @@ router.post(
   MedicationController.createMatch
 );
 
-// Update a match status (doctor/ngo/admin)
 router.put(
   "/matches/:id",
   authenticate,

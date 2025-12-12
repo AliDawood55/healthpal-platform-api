@@ -18,7 +18,6 @@ class SupportGroup {
       ]
     );
 
-    // Add creator as member + moderator
     await SupportGroupMembers.addMember(ins.insertId, data.creatorId);
     await p.query(
       `UPDATE support_group_members 

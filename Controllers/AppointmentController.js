@@ -1,10 +1,8 @@
-// Controllers/AppointmentController.js
 import Appointments from "../Models/Appointments.js";
 
-// 🟢 إنشاء موعد جديد
 export const createAppointment = async (req, res, next) => {
   try {
-    const { role } = req.user; // user جاي من Middleware auth
+    const { role } = req.user; 
 
     if (role !== "admin" && role !== "doctor") {
       return res
@@ -27,7 +25,6 @@ export const createAppointment = async (req, res, next) => {
   }
 };
 
-// 🟢 عرض جميع المواعيد
 export const getAllAppointments = async (_req, res, next) => {
   try {
     const appts = await Appointments.findAll();
@@ -37,12 +34,10 @@ export const getAllAppointments = async (_req, res, next) => {
   }
 };
 
-// 🟢 عرض موعد واحد حسب الـ id
 export const getAppointmentById = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
 
-    // ممكن تستخدم findById بدل findFullById لو مش محتاج join
     const appt = await Appointments.findFullById(id);
 
     if (!appt) {

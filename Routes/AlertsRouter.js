@@ -4,19 +4,15 @@ import requireRole from '../Middleware/roles.js';
 
 const router = Router();
 
-// GET /api/alerts
+
 router.get('/', listAlerts);
 
-// POST /api/alerts
 router.post('/', requireRole(['admin','ngo']), createAlert);
 
-// PUT /api/alerts/:id
 router.put('/:id', requireRole(['admin','ngo']), updateAlert);
 
-// DELETE /api/alerts/:id
 router.delete('/:id', requireRole(['admin']), deleteAlert);
 
-// SSE stream for live alerts
 router.get('/stream', (req, res) => {
 	res.setHeader('Content-Type', 'text/event-stream');
 	res.setHeader('Cache-Control', 'no-cache');
@@ -41,7 +37,6 @@ router.get('/stream', (req, res) => {
 	}
 	global.__alertsSSE.add(client);
 
-	// ping to keep connection open
 	const ping = setInterval(() => client.write({ type: 'ping', ts: Date.now() }), 25000);
 	req.on('close', () => {
 		clearInterval(ping);

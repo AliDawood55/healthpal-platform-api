@@ -19,12 +19,7 @@ import {
 
 const router = express.Router();
 
-// ===============================
-// Auth Routes
-// ===============================
 
-// Register
-// Allow anonymous or authenticated (optional) to register
 router.post(
   "/register",
   authenticate.optional,
@@ -35,12 +30,9 @@ router.post(
 
 router.post("/login", validate(loginSchema), login);
 
-// From here on, all routes require authentication
 router.use(authenticate);
 
-// ===============================
-// User Management (Admin only)
-// ===============================
+
 router.get("/users", authorizeRole(["admin"]), getAllUsers);
 router.get("/users/:id", authorizeRole(["admin"]), getUser);
 router.put(

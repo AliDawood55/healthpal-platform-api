@@ -1,8 +1,6 @@
-// Validation schemas
 import { z } from "zod";
 import Joi from "joi";
 
-// ---------------- ZOD SCHEMAS (users, alerts, guides) ----------------
 
 export const createUserSchema = z.object({
   name: z.string().min(1, "Name is required").max(150),
@@ -37,7 +35,7 @@ export function validate(schema, data) {
   return { ok: true, data: result.data };
 }
 
-// Alerts
+
 export const createAlertSchema = z.object({
   title: z.string().min(3).max(200),
   message: z.string().min(3).max(2000),
@@ -56,7 +54,7 @@ export const updateAlertSchema = z
     message: "At least one field is required",
   });
 
-// Health guides
+
 export const createGuideSchema = z.object({
   title: z.string().min(3).max(200),
   category: z.enum([
@@ -91,7 +89,6 @@ export const updateGuideSchema = z
     message: "At least one field is required",
   });
 
-// ---------------- JOI SCHEMAS (counseling, auth, NGO, etc.) ----------------
 
 export const counselingRequestSchema = Joi.object({
   topic: Joi.string().min(3).max(255).required().messages({
@@ -190,7 +187,6 @@ export const validateCreateUser = (req, res, next) => {
   next();
 };
 
-// Schema for join/leave support group requests
 export const joinLeaveMemberSchema = Joi.object({
   userId: Joi.number().integer().required().messages({
     'any.required': 'userId is required',

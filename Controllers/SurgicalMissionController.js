@@ -5,13 +5,11 @@ export async function createMission(req, res, next) {
   try {
     const body = req.body || {};
 
-    // Basic required checks
     const { title, specialty, location, start_date, end_date } = body;
     if (!title || !specialty || !location || !start_date || !end_date) {
       return res.status(400).json({ error: 'Missing required fields: title, specialty, location, start_date, end_date' });
     }
 
-    // Validate date order
     const sd = new Date(start_date);
     const ed = new Date(end_date);
     if (Number.isNaN(sd.getTime()) || Number.isNaN(ed.getTime())) {
@@ -21,7 +19,6 @@ export async function createMission(req, res, next) {
       return res.status(400).json({ error: 'start_date must be before or equal to end_date' });
     }
 
-    // If organizer_ngo_id provided, ensure NGO exists
     const organizerId = body.organizer_ngo_id;
     if (organizerId) {
       const ngo = await NGO.getById(organizerId);

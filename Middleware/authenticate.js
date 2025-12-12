@@ -27,10 +27,8 @@ export default function authenticate(req, res, next) {
 
 authenticate.optional = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  // If there's no Authorization header, continue without attaching a user
   if (!authHeader) return next();
 
-  // Support both "Bearer <token>" and raw-token header values
   let token;
   if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
     token = authHeader.slice(7).trim();
@@ -38,11 +36,8 @@ authenticate.optional = (req, res, next) => {
     token = authHeader.trim();
   }
 
-  // If after trimming there's no token, continue silently
   if (!token) return next();
 
-  // Quick sanity check: a JWT has two dots (header.payload.signature). If it doesn't look like a JWT,
-  // skip verification to avoid noisy "jwt malformed" errors.
   const tokenParts = token.split('.');
   if (tokenParts.length !== 3) {
     if (typeof console.debug === 'function') {
@@ -55,11 +50,9 @@ authenticate.optional = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || JWT_SECRET);
     req.user = decoded;
   } catch (err) {
-    // Use debug-level logging for optional tokens to avoid noisy warnings
     if (typeof console.debug === 'function') {
       console.debug("Invalid optional token:", err.message);
     } else {
-      // Fallback to console.log so message is available in environments without console.debug
       console.log("Invalid optional token:", err.message);
     }
   }

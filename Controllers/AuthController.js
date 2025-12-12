@@ -28,7 +28,6 @@ export async function register(req, res) {
 
     const { name, email, password, role } = value;
 
-    // === NEW: Allow first ever admin bootstrap ===
     const totalUsers = await countUsers();  
 
     if (totalUsers === 0 && role === "admin") {
@@ -42,7 +41,6 @@ export async function register(req, res) {
       });
     }
 
-    // === Existing validation for normal requests ===
     const exists = await checkIfEmailExists(email);
     if (exists.length > 0)
       return res.status(400).json({ error: "Email already registered" });
@@ -86,7 +84,6 @@ export async function login(req, res) {
       return res.status(404).json({ error: "User not found" });
 
     const user = rows[0];
-     //console.log('login attempt user row:', user);//check user 
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: "Invalid credentials" });

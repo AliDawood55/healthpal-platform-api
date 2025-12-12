@@ -1,4 +1,4 @@
-// /Validator/medicationValidator.js
+
 import Joi from 'joi';
 
 export const createRequestSchema = Joi.object({
